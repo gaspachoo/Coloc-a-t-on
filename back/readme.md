@@ -4,7 +4,7 @@ To launch the server please type:
 
 ```bash
 npm install
-node app.js
+npx ts-node app.ts
 ```
 
 Aller ensuite sur le site : http://localhost:3000/
