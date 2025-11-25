@@ -8,9 +8,19 @@ const usersCtrl = {
         data: { last_name, first_name, class_year, email, password_hash, role }
     });
     return res.status(201).json(user);
-    }
-    
+    },
 
+    getUsers: async (req: Request, res: Response) => {
+      const users = await prisma.user.findMany();
+      return res.status(200).json(users);
+    },
+
+    deleteUser: async (req: Request, res: Response) => {
+        const user = await prisma.user.delete({
+            where: { id: Number(req.params.id) }
+        });
+        return res.status(200).json(user);
+    }
 };
 
 export default usersCtrl;

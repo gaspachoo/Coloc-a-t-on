@@ -1,6 +1,5 @@
 
-import express, { Request, Response } from 'express';
-import prisma from '../services/databaseService';
+import express from 'express';
 import usersCtrl from '../controllers/usersCtrl';
 const router = express.Router();
 
@@ -8,17 +7,8 @@ const router = express.Router();
 router.post('/', usersCtrl.createUser);
 
 // Exemple : Route pour lister les utilisateurs
-router.get('/', async (req: Request, res: Response) => {
-  const users = await prisma.user.findMany();
-  res.json(users);
-});
+router.get('/', usersCtrl.getUsers);
 
-router.delete('/:id', async (req: Request, res: Response) => {
-  const user = await prisma.user.delete({
-    where: { id: Number(req.params.id) }
-  });
-  res.json(user);
-});
-
+router.delete('/:id', usersCtrl.deleteUser);
 
 export default router;
