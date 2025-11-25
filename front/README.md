@@ -78,3 +78,7 @@ To launch the server please type:
 npm install
 npm run dev
 ```
+
+lucide-react :
+npm install leaflet react-leaflet lucide-react
+npm install -D @types/leaflet
