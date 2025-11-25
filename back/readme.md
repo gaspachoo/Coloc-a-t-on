@@ -1,5 +1,17 @@
 ## Backend (ExpressJS)
 
+To migrate DB, please type:
+
+```bash
+ npx prisma migrate dev --name init
+```
+
+To generate prisma client, please type:
+
+```bash
+npx prisma generate
+```
+
 To launch the server please type:
 
 ```bash
