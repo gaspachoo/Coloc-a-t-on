@@ -1,8 +1,8 @@
 import express from 'express';
-import colocationsRoutes from './colocationsRoutes';
+import usersRoutes from './usersRoutes';
 
 const router = express.Router();
 
-router.use('/colocations', colocationsRoutes);
+router.use('/users', usersRoutes);
 
 export default router;
