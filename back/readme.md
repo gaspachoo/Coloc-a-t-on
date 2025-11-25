@@ -4,5 +4,5 @@ To launch the server please type:
 
 ```bash
 npm install
-npm run dev
+node app.js
 ```
