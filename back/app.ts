@@ -8,9 +8,9 @@ app.use(express.json());
 app.use('/api', routes);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
+  res.send('Backend is running in the background!');
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`Backend listening on port ${port}`);
 });
