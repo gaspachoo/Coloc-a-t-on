@@ -10,6 +10,14 @@ const usersRepo = {
     return prisma.user.findMany();
   },
 
+  async getUserById(id: number) {
+    return prisma.user.findUnique({ where: { id } });
+  },
+
+  async update(id: number, data: any) {
+    return prisma.user.update({ where: { id }, data });
+  },
+
   async delete(id: number) {
     return prisma.user.delete({ where: { id } });
   }

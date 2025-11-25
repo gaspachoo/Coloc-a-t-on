@@ -9,6 +9,14 @@ const usersServices = {
     return await usersRepo.getAll();
   },
 
+  async getUserById(id: number) {
+    return await usersRepo.getUserById(id);
+  },
+
+  async updateUser(id: number, data: any) {
+    return await usersRepo.update(id, data);
+  },
+
   async deleteUser(id: number) {
     return await usersRepo.delete(id);
   }
