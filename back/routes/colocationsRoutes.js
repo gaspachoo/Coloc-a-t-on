@@ -1,0 +1,1 @@
+// Will welcome the routes functions for colocations
