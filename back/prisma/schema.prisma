@@ -5,25 +5,168 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id            Int       @id @default(autoincrement())
-  last_name     String    @db.VarChar(100)
-  first_name    String    @db.VarChar(100)
-  class_year    Int?      @db.SmallInt
-  email         String    @unique @db.VarChar(255)
-  password_hash String    @db.VarChar(255)
-  role          Role      @default(user)
-  created_at    DateTime  @default(now())
-}
-
 enum Role {
   user
   superadmin
+}
+
+enum Ambiance {
+  calme
+  studieuse
+  equilibree
+  festive
+  tres_festive
+}
+
+enum FlatshareStatus {
+  active
+  scheduled_free
+  archived
+}
+
+enum FlatshareMemberStatus {
+  pending
+  active
+  scheduled_departure
+  former
+}
+
+enum FlatshareApplicationStatus {
+  pending
+  accepted
+  rejected
+  cancelled
+}
+
+model User {
+  id                    Int                    @id @default(autoincrement())
+  last_name             String                 @db.VarChar(100)
+  first_name            String                 @db.VarChar(100)
+  class_year            Int?                   @db.SmallInt
+  email                 String                 @unique @db.VarChar(255)
+  password_hash         String                 @db.VarChar(255)
+  role                  Role                   @default(user)
+  created_at            DateTime               @default(now())
+  AuthToken             AuthToken[]
+  flatshares            Flatshare[]
+  flatshareMembers      FlatshareMember[]
+  favorites             Favorite[]
+  flatshareApplications FlatshareApplication[]
+}
+
+model AuthToken {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  token_hash String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  expires_at DateTime
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model Flatshare {
+  id                    Int                    @id @default(autoincrement())
+  title                 String                 @db.VarChar(255)
+  description           String?                @db.Text
+  rent_per_person       Decimal                @db.Decimal(8, 2)
+  bedrooms_count        Int                    @db.SmallInt
+  created_at            DateTime               @default(now())
+  street                String                 @db.VarChar(255)
+  postal_code           String                 @db.VarChar(10)
+  city                  String                 @db.VarChar(100)
+  latitude              Decimal?               @db.Decimal(9, 6)
+  longitude             Decimal?               @db.Decimal(9, 6)
+  ambiance              Ambiance               @default(equilibree)
+  status                FlatshareStatus        @default(active)
+  next_available_at     DateTime?
+  created_by_user_id    Int
+  created_by_user       User                   @relation(fields: [created_by_user_id], references: [id], onDelete: Restrict)
+  flatshareMembers      FlatshareMember[]
+  flatsharePhotos       FlatsharePhoto[]
+  favorites             Favorite[]
+  flatshareApplications FlatshareApplication[]
+  flatshareEquipments   FlatshareEquipment[]
+}
+
+model FlatshareMember {
+  flatshare_id         Int
+  user_id              Int
+  status               FlatshareMemberStatus @default(pending)
+  joined_at            DateTime?
+  left_at              DateTime?
+  departure_planned_at DateTime?
+
+  flatshare Flatshare @relation(fields: [flatshare_id], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([flatshare_id, user_id])
+  @@index([user_id])
+}
+
+model FlatsharePhoto {
+  id           Int      @id @default(autoincrement())
+  flatshare_id Int
+  url          String   @db.VarChar(500)
+  position     Int      @default(0) @db.SmallInt
+  created_at   DateTime @default(now())
+
+  flatshare Flatshare @relation(fields: [flatshare_id], references: [id], onDelete: Cascade)
+
+  @@index([flatshare_id])
+}
+
+model Favorite {
+  user_id      Int
+  flatshare_id Int
+  created_at   DateTime @default(now())
+
+  user      User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  flatshare Flatshare @relation(fields: [flatshare_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, flatshare_id])
+  @@index([flatshare_id])
+}
+
+model FlatshareApplication {
+  id           Int                        @id @default(autoincrement())
+  flatshare_id Int
+  user_id      Int
+  message      String?                    @db.Text
+  status       FlatshareApplicationStatus @default(pending)
+  created_at   DateTime                   @default(now())
+
+  flatshare Flatshare @relation(fields: [flatshare_id], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([flatshare_id])
+  @@index([user_id])
+}
+
+model Equipment {
+  id                  Int                  @id @default(autoincrement())
+  name                String               @unique @db.VarChar(100)
+  icon                String?              @db.VarChar(100)
+  created_at          DateTime             @default(now())
+  flatshareEquipments FlatshareEquipment[]
+}
+
+model FlatshareEquipment {
+  flatshare_id Int
+  equipment_id Int
+
+  flatshare Flatshare @relation(fields: [flatshare_id], references: [id], onDelete: Cascade)
+  equipment Equipment @relation(fields: [equipment_id], references: [id], onDelete: Cascade)
+
+  @@id([flatshare_id, equipment_id])
+  @@index([equipment_id])
 }
