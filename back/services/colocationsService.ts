@@ -1,1 +1,0 @@
-// Will welcome the services functions for colocations
