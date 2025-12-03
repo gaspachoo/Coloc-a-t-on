@@ -1,12 +1,11 @@
 import prisma from '../services/databaseService';
 
 const flatsharesRepo = {
-  async create(data: any) {
+  async create(data: any, userId: number) {
     const { title, 
             description, 
             rent_per_person, 
             bedrooms_count, 
-            created_at, 
             street, 
             postal_code, 
             city, 
@@ -14,38 +13,36 @@ const flatsharesRepo = {
             longitude, 
             ambiance, 
             status, 
-            next_available_at, 
-            created_by_user_id, 
-            created_by_user, 
-            flatshareMembers, 
-            flatsharePhotos, 
-            favorites, 
-            flatshareApplications, 
-            flatshareEquipments
-      } = data.body;
+            next_available_at
+      } = data;
       
-    return prisma.flatshare.create(
-        { data : {  title, 
-                    description, 
-                    rent_per_person, 
-                    bedrooms_count, 
-                    created_at, 
-                    street, 
-                    postal_code, 
-                    city, 
-                    latitude, 
-                    longitude, 
-                    ambiance, 
-                    status, 
-                    next_available_at, 
-                    created_by_user_id, 
-                    created_by_user, 
-                    flatshareMembers, 
-                    flatsharePhotos, 
-                    favorites, 
-                    flatshareApplications, 
-                    flatshareEquipments
-      } });
+    return prisma.flatshare.create({
+      data: {
+        title, 
+        description, 
+        rent_per_person, 
+        bedrooms_count, 
+        street, 
+        postal_code, 
+        city, 
+        latitude, 
+        longitude, 
+        ambiance, 
+        status, 
+        next_available_at, 
+        created_by_user_id: userId,
+        flatshareMembers: {
+          create: {
+            user_id: userId,
+            status: 'active',
+            joined_at: new Date()
+          }
+        }
+      },
+      include: {
+        flatshareMembers: true
+      }
+    });
   },
 
   async getAll() {
@@ -62,6 +59,18 @@ const flatsharesRepo = {
 
   async delete(id: number) {
     return prisma.flatshare.delete({ where: { id } });
+  },
+
+  async checkMembership(flatshareId: number, userId: number) {
+    const member = await prisma.flatshareMember.findUnique({
+      where: {
+        flatshare_id_user_id: {
+          flatshare_id: flatshareId,
+          user_id: userId
+        }
+      }
+    });
+    return member !== null;
   }
 };
 

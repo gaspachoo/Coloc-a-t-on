@@ -1,8 +1,12 @@
 import flatsharesRepo from '../repositories/flatsharesRepo';
 
 const flatsharesServices = {
-  async createFlatshare(data: any) {
-    return await flatsharesRepo.create(data);
+  async createFlatshare(req: any) {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+    return await flatsharesRepo.create(req.body, userId);
   },
 
   async getFlatshares() {
@@ -19,6 +23,10 @@ const flatsharesServices = {
 
   async deleteFlatshare(id: number) {
     return await flatsharesRepo.delete(id);
+  },
+
+  async checkUserMembership(flatshareId: number, userId: number) {
+    return await flatsharesRepo.checkMembership(flatshareId, userId);
   }
 };
 

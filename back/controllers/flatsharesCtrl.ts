@@ -51,6 +51,28 @@ const flatsharesCtrl = {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
             return res.status(500).json({ error: 'Fail to delete flatshare', details: message });
         }
+    },
+
+    checkMembership: async (req: any, res: Response, next: any) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const isMember = await flatsharesService.checkUserMembership(flatshareId, userId);
+
+            if (!isMember) {
+                return res.status(403).json({ error: 'Vous n\'êtes pas membre de cette colocation' });
+            }
+
+            next();
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to check membership', details: message });
+        }
     }
 };
 
