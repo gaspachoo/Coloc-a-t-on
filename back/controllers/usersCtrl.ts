@@ -51,6 +51,26 @@ const usersCtrl = {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
             return res.status(500).json({ error: 'Fail to delete user', details: message });
         }
+    },
+
+    checkOwnership: async (req: any, res: Response, next: any) => {
+        try {
+            const userId = Number(req.params.id);
+            const currentUserId = req.user?.id;
+
+            if (!currentUserId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            if (userId !== currentUserId) {
+                return res.status(403).json({ error: 'Vous ne pouvez modifier que votre propre compte' });
+            }
+
+            next();
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to check ownership', details: message });
+        }
     }
 };
 

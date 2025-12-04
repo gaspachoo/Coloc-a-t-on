@@ -1,12 +1,15 @@
 
 import express from 'express';
 import usersCtrl from '../controllers/usersCtrl';
+import requireAuth from '../utils/requireAuth';
 const router = express.Router();
 
-router.post('/', usersCtrl.createUser);
+// Public routes
 router.get('/', usersCtrl.getUsers);
-router.delete('/:id', usersCtrl.deleteUser);
 router.get('/:id', usersCtrl.getUserById);
-router.patch('/:id', usersCtrl.updateUser);
+
+// Protected routes
+router.patch('/:id', requireAuth, usersCtrl.checkOwnership, usersCtrl.updateUser);
+router.delete('/:id', requireAuth, usersCtrl.checkOwnership, usersCtrl.deleteUser);
 
 export default router;
