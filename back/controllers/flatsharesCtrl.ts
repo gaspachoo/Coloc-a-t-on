@@ -73,6 +73,68 @@ const flatsharesCtrl = {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
             return res.status(500).json({ error: 'Fail to check membership', details: message });
         }
+    },
+
+    uploadPhoto: async (req: Request, res: Response) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded' });
+            }
+
+            const position = req.body.position ? Number(req.body.position) : undefined;
+            
+            const photo = await flatsharesService.addPhoto(
+                flatshareId,
+                req.file.buffer,
+                position
+            );
+
+            return res.status(201).json(photo);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to upload photo', details: message });
+        }
+    },
+
+    getPhotos: async (req: Request, res: Response) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            const photos = await flatsharesService.getPhotos(flatshareId);
+            return res.status(200).json(photos);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to get photos', details: message });
+        }
+    },
+
+    deletePhoto: async (req: Request, res: Response) => {
+        try {
+            const photoId = Number(req.params.photoId);
+            await flatsharesService.deletePhoto(photoId);
+            return res.status(204).send();
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to delete photo', details: message });
+        }
+    },
+
+    updatePhotoPosition: async (req: Request, res: Response) => {
+        try {
+            const photoId = Number(req.params.photoId);
+            const { position } = req.body;
+
+            if (position === undefined) {
+                return res.status(400).json({ error: 'Position is required' });
+            }
+
+            const photo = await flatsharesService.updatePhotoPosition(photoId, position);
+            return res.status(200).json(photo);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to update photo position', details: message });
+        }
     }
 };
 

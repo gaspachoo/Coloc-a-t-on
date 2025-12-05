@@ -71,6 +71,51 @@ const flatsharesRepo = {
       }
     });
     return member !== null;
+  },
+
+  async addPhoto(flatshareId: number, url: string, position?: number) {
+    // Si aucune position n'est fournie, on prend la position max + 1
+    if (position === undefined) {
+      const maxPositionPhoto = await prisma.flatsharePhoto.findFirst({
+        where: { flatshare_id: flatshareId },
+        orderBy: { position: 'desc' }
+      });
+      position = maxPositionPhoto ? maxPositionPhoto.position + 1 : 0;
+    }
+
+    return prisma.flatsharePhoto.create({
+      data: {
+        flatshare_id: flatshareId,
+        url,
+        position
+      }
+    });
+  },
+
+  async getPhotos(flatshareId: number) {
+    return prisma.flatsharePhoto.findMany({
+      where: { flatshare_id: flatshareId },
+      orderBy: { position: 'asc' }
+    });
+  },
+
+  async deletePhoto(photoId: number) {
+    return prisma.flatsharePhoto.delete({
+      where: { id: photoId }
+    });
+  },
+
+  async getPhotoById(photoId: number) {
+    return prisma.flatsharePhoto.findUnique({
+      where: { id: photoId }
+    });
+  },
+
+  async updatePhotoPosition(photoId: number, position: number) {
+    return prisma.flatsharePhoto.update({
+      where: { id: photoId },
+      data: { position }
+    });
   }
 };
 
