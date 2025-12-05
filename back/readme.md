@@ -6,6 +6,14 @@ To migrate DB, please type:
  npx prisma migrate dev --name init
 ```
 
+It way be required to reset the database if there is an issue (more probably compatibility issue).
+
+To reset the database, please type:
+
+```bash
+ npx prisma migrate reset
+```
+
 To generate prisma client, please type:
 
 ```bash
