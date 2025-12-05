@@ -20,6 +20,20 @@ const usersRepo = {
 
   async delete(id: number) {
     return prisma.user.delete({ where: { id } });
+  },
+
+  async updateProfilePhoto(id: number, photoUrl: string) {
+    return prisma.user.update({
+      where: { id },
+      data: { profile_photo_url: photoUrl }
+    });
+  },
+
+  async deleteProfilePhoto(id: number) {
+    return prisma.user.update({
+      where: { id },
+      data: { profile_photo_url: null }
+    });
   }
 };
 

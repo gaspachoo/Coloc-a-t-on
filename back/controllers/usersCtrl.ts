@@ -71,6 +71,33 @@ const usersCtrl = {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
             return res.status(500).json({ error: 'Fail to check ownership', details: message });
         }
+    },
+
+    uploadProfilePhoto: async (req: Request, res: Response) => {
+        try {
+            const userId = Number(req.params.id);
+            
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded' });
+            }
+
+            const user = await usersService.uploadProfilePhoto(userId, req.file.buffer);
+            return res.status(200).json(user);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to upload profile photo', details: message });
+        }
+    },
+
+    deleteProfilePhoto: async (req: Request, res: Response) => {
+        try {
+            const userId = Number(req.params.id);
+            const user = await usersService.deleteProfilePhoto(userId);
+            return res.status(200).json(user);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to delete profile photo', details: message });
+        }
     }
 };
 
