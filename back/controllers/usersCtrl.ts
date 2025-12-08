@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import usersService from '../services/usersService';
+import { AuthenticatedRequest } from '../types/express';
 
 const usersCtrl = {
   createUser: async (req: Request, res: Response) => {
@@ -53,7 +54,7 @@ const usersCtrl = {
         }
     },
 
-    checkOwnership: async (req: any, res: Response, next: any) => {
+    checkOwnership: async (req: AuthenticatedRequest, res: Response, next: any) => {
         try {
             const userId = Number(req.params.id);
             const currentUserId = req.user?.id;
@@ -73,7 +74,7 @@ const usersCtrl = {
         }
     },
 
-    uploadProfilePhoto: async (req: Request, res: Response) => {
+    uploadProfilePhoto: async (req: AuthenticatedRequest, res: Response) => {
         try {
             const userId = Number(req.params.id);
             
@@ -89,7 +90,7 @@ const usersCtrl = {
         }
     },
 
-    deleteProfilePhoto: async (req: Request, res: Response) => {
+    deleteProfilePhoto: async (req: AuthenticatedRequest, res: Response) => {
         try {
             const userId = Number(req.params.id);
             const user = await usersService.deleteProfilePhoto(userId);

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import flatsharesService from '../services/flatsharesService';
+import { AuthenticatedRequest } from '../types/express';
 
 const flatsharesCtrl = {
   createFlatshare: async (req: Request, res: Response) => {
@@ -75,6 +76,17 @@ const flatsharesCtrl = {
         }
     },
 
+    getMembers: async (req: Request, res: Response) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            const members = await flatsharesService.getMembers(flatshareId);
+            return res.status(200).json(members);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to get members', details: message });
+        }
+    },
+
     uploadPhoto: async (req: Request, res: Response) => {
         try {
             const flatshareId = Number(req.params.id);
@@ -134,6 +146,91 @@ const flatsharesCtrl = {
         } catch (err: any) {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
             return res.status(500).json({ error: 'Fail to update photo position', details: message });
+        }
+    },
+
+    createApplication: async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            const userId = req.user?.id;
+            const { message } = req.body;
+
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const application = await flatsharesService.createApplication(flatshareId, userId, message);
+            return res.status(201).json(application);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to create application', details: message });
+        }
+    },
+
+    getApplications: async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const applications = await flatsharesService.getApplications(flatshareId, userId);
+            return res.status(200).json(applications);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to get applications', details: message });
+        }
+    },
+
+    acceptApplication: async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const applicationId = Number(req.params.applicationId);
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const application = await flatsharesService.acceptApplication(applicationId, userId);
+            return res.status(200).json(application);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to accept application', details: message });
+        }
+    },
+
+    rejectApplication: async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const applicationId = Number(req.params.applicationId);
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const application = await flatsharesService.rejectApplication(applicationId, userId);
+            return res.status(200).json(application);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to reject application', details: message });
+        }
+    },
+
+    getUserApplications: async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const applications = await flatsharesService.getUserApplications(userId);
+            return res.status(200).json(applications);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to get user applications', details: message });
         }
     }
 };

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import authService from '../services/authService';
+import { AuthenticatedRequest } from '../types/express';
 
 export default {
   signup: async (req: Request, res: Response) => {
@@ -33,7 +34,7 @@ export default {
     }
   },
 
-  me: async (req: any, res: Response) => {
+  me: async (req: AuthenticatedRequest, res: Response) => {
     return res.status(200).json({ user: req.user });
   },
 };

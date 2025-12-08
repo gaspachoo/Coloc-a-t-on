@@ -7,7 +7,12 @@ const router = express.Router();
 
 // Public routes
 router.get('/', flatsharesCtrl.getFlatshares);
+
+// User applications route (before /:id to avoid conflict)
+router.get('/user/applications', requireAuth, flatsharesCtrl.getUserApplications);
+
 router.get('/:id', flatsharesCtrl.getFlatshareById);
+router.get('/:id/members', flatsharesCtrl.getMembers);
 router.get('/:id/photos', flatsharesCtrl.getPhotos);
 
 // Protected routes
@@ -19,5 +24,11 @@ router.delete('/:id', requireAuth, flatsharesCtrl.checkMembership, flatsharesCtr
 router.post('/:id/photos', requireAuth, flatsharesCtrl.checkMembership, upload.single('photo'), flatsharesCtrl.uploadPhoto);
 router.delete('/:id/photos/:photoId', requireAuth, flatsharesCtrl.checkMembership, flatsharesCtrl.deletePhoto);
 router.patch('/:id/photos/:photoId/position', requireAuth, flatsharesCtrl.checkMembership, flatsharesCtrl.updatePhotoPosition);
+
+// Application routes
+router.post('/:id/applications', requireAuth, flatsharesCtrl.createApplication);
+router.get('/:id/applications', requireAuth, flatsharesCtrl.getApplications);
+router.patch('/:id/applications/:applicationId/accept', requireAuth, flatsharesCtrl.acceptApplication);
+router.patch('/:id/applications/:applicationId/reject', requireAuth, flatsharesCtrl.rejectApplication);
 
 export default router;

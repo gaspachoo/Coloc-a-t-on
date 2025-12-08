@@ -73,6 +73,27 @@ const flatsharesRepo = {
     return member !== null;
   },
 
+  async getMembers(flatshareId: number) {
+    const members = await prisma.flatshareMember.findMany({
+      where: { flatshare_id: flatshareId, status: 'active' },
+      include: {
+        user: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            profile_photo_url: true
+          }
+        }
+      },
+      orderBy: { joined_at: 'asc' }
+    });
+
+    // Retourner seulement les infos utilisateur
+    return members.map(m => m.user);
+  },
+
   async addPhoto(flatshareId: number, url: string, position?: number) {
     // Si aucune position n'est fournie, on prend la position max + 1
     if (position === undefined) {
@@ -115,6 +136,111 @@ const flatsharesRepo = {
     return prisma.flatsharePhoto.update({
       where: { id: photoId },
       data: { position }
+    });
+  },
+
+  // Application methods
+  async createApplication(flatshareId: number, userId: number, message?: string) {
+    return prisma.flatshareApplication.create({
+      data: {
+        flatshare_id: flatshareId,
+        user_id: userId,
+        message,
+        status: 'pending'
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            profile_photo_url: true
+          }
+        }
+      }
+    });
+  },
+
+  async getApplications(flatshareId: number) {
+    return prisma.flatshareApplication.findMany({
+      where: { flatshare_id: flatshareId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            profile_photo_url: true
+          }
+        }
+      },
+      orderBy: { created_at: 'desc' }
+    });
+  },
+
+  async getApplicationById(applicationId: number) {
+    return prisma.flatshareApplication.findUnique({
+      where: { id: applicationId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+            profile_photo_url: true
+          }
+        }
+      }
+    });
+  },
+
+  async getUserApplications(userId: number) {
+    return prisma.flatshareApplication.findMany({
+      where: { user_id: userId },
+      include: {
+        flatshare: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            street: true,
+            city: true
+          }
+        }
+      },
+      orderBy: { created_at: 'desc' }
+    });
+  },
+
+  async updateApplicationStatus(applicationId: number, status: 'accepted' | 'rejected' | 'cancelled') {
+    return prisma.flatshareApplication.update({
+      where: { id: applicationId },
+      data: { status }
+    });
+  },
+
+  async addMember(flatshareId: number, userId: number) {
+    return prisma.flatshareMember.create({
+      data: {
+        flatshare_id: flatshareId,
+        user_id: userId,
+        status: 'active',
+        joined_at: new Date()
+      }
+    });
+  },
+
+  async cancelPendingApplications(flatshareId: number, userId: number) {
+    return prisma.flatshareApplication.updateMany({
+      where: {
+        flatshare_id: flatshareId,
+        user_id: userId,
+        status: 'pending'
+      },
+      data: { status: 'cancelled' }
     });
   }
 };
