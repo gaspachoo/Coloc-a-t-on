@@ -28,3 +28,7 @@ npx ts-node app.ts
 ```
 
 Aller ensuite sur le site : http://localhost:3000/
+
+To-Do:
+
+- Instead of sending the token in the body, store it in a cookie (httpOnly, secure, sameSite)
