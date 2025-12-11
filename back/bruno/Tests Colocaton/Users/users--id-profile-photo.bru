@@ -11,17 +11,18 @@ post {
 }
 
 params:path {
-  id: 1
-}
-
-headers {
-  Authorization: Bearer 9eea2427f43950fb84346989edf4bc30a93967561069fddaaf7cef9087515769fa9f611142c1e87cf39782765c092a99
+  id: 2
 }
 
 body:multipart-form {
-  photo: @file(/D:/Gaspard/Pictures/image.jpg)
+  photo: @file(D:\Gaspard\Pictures\image.jpg)
+}
+
+vars:pre-request {
+  id: 2
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

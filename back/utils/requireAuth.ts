@@ -4,8 +4,7 @@ import { hashToken } from './authToken';
 
 export default async function requireAuth(req: any, res: Response, next: NextFunction) {
   try {
-    const auth = req.headers.authorization || '';
-    const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+    const token = req.cookies.auth_token;
     if (!token) return res.status(401).json({ error: 'Unauthorized' });
 
     const token_hash = hashToken(token);

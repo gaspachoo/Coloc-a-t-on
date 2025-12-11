@@ -16,7 +16,13 @@ export default {
   login: async (req: Request, res: Response) => {
     try {
       const result = await authService.login(req.body);
-      return res.status(200).json(result);
+      res.cookie('auth_token', result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
+      });
+      return res.status(200).json({ user: result.user });
     } catch (err: any) {
       return res.status(401).json({ error: 'Fail to login', details: err.message });
     }
@@ -24,10 +30,10 @@ export default {
 
   logout: async (req: Request, res: Response) => {
     try {
-      const auth = req.headers.authorization || '';
-      const token = auth.startsWith('Bearer ') ? auth.slice(7) : '';
+      const token = req.cookies.auth_token;
       if (!token) return res.status(400).json({ error: 'Missing token' });
       await authService.logout(token);
+      res.clearCookie('auth_token');
       return res.status(204).send();
     } catch (err: any) {
       return res.status(400).json({ error: 'Fail to logout', details: err.message });
