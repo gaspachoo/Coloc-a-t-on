@@ -1,0 +1,29 @@
+meta {
+  name: flatshares/:id/applications
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/flatshares/:id/applications
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+headers {
+  Authorization: Bearer 69db50d58efccf10ed1eaba24482ab6dfeed310a2e1890dba9e8cb0781c64f2802ac91e1bc7c906c937837aafeedec94
+}
+
+body:json {
+  {
+      "message" : "svp"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

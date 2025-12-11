@@ -1,0 +1,38 @@
+meta {
+  name: flatshares/:id/members
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/api/flatshares/:id/members
+  body: text
+  auth: none
+}
+
+params:path {
+  id: 1
+}
+
+headers {
+  Authorization: Bearer 9eea2427f43950fb84346989edf4bc30a93967561069fddaaf7cef9087515769fa9f611142c1e87cf39782765c092a99
+}
+
+body:text {
+  {
+      "title" : "La coloc de gaspard",
+      "description" : "La coloc du futur",
+      "rent_per_person" : 350,
+      "bedrooms_count" : 5,
+      "street" : "Boulevard Françoise Duparc",
+      "postal_code" : "13004",
+      "city" : "Marseille",
+      "latitude" : "43.29973926416241",
+      "longitude" : "5.3868932617076055",
+      "ambiance" : "festive"
+  }
+}
+
+settings {
+  encodeUrl: true
+}

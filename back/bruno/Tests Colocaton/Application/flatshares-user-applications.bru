@@ -1,0 +1,19 @@
+meta {
+  name: flatshares/user/applications
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/flatshares/user/applications
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer 69db50d58efccf10ed1eaba24482ab6dfeed310a2e1890dba9e8cb0781c64f2802ac91e1bc7c906c937837aafeedec94
+}
+
+settings {
+  encodeUrl: true
+}

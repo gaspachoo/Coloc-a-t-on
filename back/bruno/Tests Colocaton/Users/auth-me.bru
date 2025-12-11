@@ -1,0 +1,19 @@
+meta {
+  name: auth/me
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{base_url}}/api/auth/me
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer 87515f8fe2f93949a2fa27802b312c05688968523f7cf8045b3ca631dcc54a9c63080fbee3a73221ab94ffc1a711404c
+}
+
+settings {
+  encodeUrl: true
+}

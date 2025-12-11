@@ -1,0 +1,27 @@
+meta {
+  name: users/:id/profile-photo
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{base_url}}/api/users/:id/profile-photo
+  body: multipartForm
+  auth: none
+}
+
+params:path {
+  id: 1
+}
+
+headers {
+  Authorization: Bearer 9eea2427f43950fb84346989edf4bc30a93967561069fddaaf7cef9087515769fa9f611142c1e87cf39782765c092a99
+}
+
+body:multipart-form {
+  photo: @file(/D:/Gaspard/Pictures/image.jpg)
+}
+
+settings {
+  encodeUrl: true
+}

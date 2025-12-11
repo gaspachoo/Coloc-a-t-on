@@ -1,0 +1,23 @@
+meta {
+  name: auth/signup
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/auth/signup
+  body: json
+  auth: none
+}
+
+body:json {
+  { 
+      "email" : "arthur.gautier@centrale-med.fr",
+      "password" : "secret",
+      "first_name" : "Arthur",
+      "last_name" : "Gautier" }
+}
+
+settings {
+  encodeUrl: true
+}

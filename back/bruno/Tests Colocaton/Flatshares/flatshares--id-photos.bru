@@ -1,0 +1,28 @@
+meta {
+  name: flatshares/:id/photos
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/api/flatshares/:id/photos
+  body: multipartForm
+  auth: none
+}
+
+params:path {
+  id: 1
+}
+
+headers {
+  Authorization: Bearer 9eea2427f43950fb84346989edf4bc30a93967561069fddaaf7cef9087515769fa9f611142c1e87cf39782765c092a99
+}
+
+body:multipart-form {
+  photo: @file(/D:/Gaspard/Pictures/image.jpg)
+  position: 0
+}
+
+settings {
+  encodeUrl: true
+}
