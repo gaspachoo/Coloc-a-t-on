@@ -32,3 +32,10 @@ Aller ensuite sur le site : http://localhost:3000/
 To-Do:
 
 - Instead of sending the token in the body, store it in a cookie (httpOnly, secure, sameSite)
+
+DB_USER=user
+DB_PASSWORD=chaton123
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=colocaton
+DATABASE_URL="postgresql://user:chaton123@localhost:5432/colocaton"
