@@ -38,4 +38,3 @@ DB_PASSWORD=chaton123
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=colocaton
-DATABASE_URL="postgresql://user:chaton123@localhost:5432/colocaton"
