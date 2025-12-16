@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Filter,
   Star,
@@ -11,6 +11,7 @@ export type PanelMode = "filters" | "favorites" | null;
 
 type LeftRailProps = {
   panelMode: PanelMode;
+  onHomeClick: () => void;
   onToggleFilters: () => void;
   onToggleFavorites: () => void;
   onProfile: () => void;
@@ -19,17 +20,28 @@ type LeftRailProps = {
 
 const LeftRail = ({
   panelMode,
+  onHomeClick,
   onToggleFilters,
   onToggleFavorites,
   onProfile,
   onSettings,
 }: LeftRailProps) => {
+  const navigate = useNavigate();
+
   return (
     <aside className="left-rail">
       <div className="left-rail-top">
-        <Link to="/" className="left-rail-logo" title="Accueil">
-          <img src={colocSiteLogo} alt="Coloc-a-t'on" />
-        </Link>
+        <button
+          type="button"
+          className="left-rail-logo-btn"
+          title="Accueil"
+          onClick={() => {
+            onHomeClick();      // ferme panel + reset preview
+            navigate("/");      // ramène à l'accueil
+          }}
+        >
+          <img src={colocSiteLogo} alt="Accueil" />
+        </button>
 
         <button
           type="button"

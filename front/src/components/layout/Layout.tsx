@@ -1,41 +1,37 @@
 import { useState } from "react";
 import LeftRail from "./LeftRail";
 import SidePanel, { type PanelMode } from "./SidePanel";
+import { useUi } from "../../context/uiContext";
 
-type LayoutProps = {
-  children: React.ReactNode;
-};
-
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const [panelMode, setPanelMode] = useState<PanelMode>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const { triggerResetUI } = useUi();
 
   const togglePanel = (mode: Exclude<PanelMode, null>) => {
-    // si on clique le même mode -> toggle open/close
     if (panelMode === mode) {
       setIsPanelOpen((prev) => !prev);
-      // si on ferme, on peut laisser panelMode inchangé, pas grave
       return;
     }
-    // sinon, on change le mode et on ouvre
     setPanelMode(mode);
     setIsPanelOpen(true);
+  };
+
+  const handleHomeClick = () => {
+    setIsPanelOpen(false);
+    setPanelMode(null);
+    triggerResetUI(); // <-- will clear coloc preview (HomePage listens)
   };
 
   return (
     <div className="app-shell">
       <LeftRail
         panelMode={panelMode}
+        onHomeClick={handleHomeClick}
         onToggleFilters={() => togglePanel("filters")}
         onToggleFavorites={() => togglePanel("favorites")}
-        onProfile={() => {
-          // plus tard: navigate("/profile") ou modal login
-          alert("Profil (à faire)");
-        }}
-        onSettings={() => {
-          // plus tard: navigate("/settings") ou modal
-          alert("Paramètres (à faire)");
-        }}
+        onProfile={() => alert("Profil (à faire)")}
+        onSettings={() => alert("Paramètres (à faire)")}
       />
 
       <SidePanel panelMode={panelMode} isOpen={isPanelOpen} />

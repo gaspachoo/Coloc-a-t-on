@@ -68,6 +68,18 @@ body {
   object-fit: contain;
 }
 
+.left-rail-logo-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.left-rail-logo-btn img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 /* Boutons icônes */
 .left-rail-btn {
   border: none;

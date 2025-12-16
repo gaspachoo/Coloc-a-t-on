@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useUi } from "../context/uiContext";
 import TopSearchBar from "../components/home/TopSearchBar";
 import MapView from "../components/home/MapView";
 import ColocPreviewBar from "../components/home/ColocPreviewBar";
@@ -7,6 +8,11 @@ import type { Coloc } from "../mock/colocs";
 
 const HomePage = () => {
   const [selectedColocId, setSelectedColocId] = useState<string | null>(null);
+  const { resetToken } = useUi();
+
+    useEffect(() => {
+    setSelectedColocId(null); // <-- closes the preview bar
+  }, [resetToken]);
 
   const selectedColoc: Coloc | null = selectedColocId
     ? getColocById(selectedColocId)
