@@ -1,42 +1,338 @@
+/* =========================================================
+   RESET & GLOBAL
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  overflow: hidden; /* 🔒 aucune page ne défile */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* =========================================================
+   APP SHELL (LEFT RAIL + SIDE PANEL + CONTENT)
+   ========================================================= */
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.app-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
 }
 
-.card {
-  padding: 2em;
+/* =========================================================
+   LEFT RAIL (BARRE GAUCHE MINIMALE)
+   ========================================================= */
+
+.left-rail {
+  width: 72px;
+  background: #f7f7ff;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
 }
 
-.read-the-docs {
-  color: #888;
+.left-rail-top,
+.left-rail-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.left-rail-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/* Boutons icônes */
+.left-rail-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 10px;
+}
+
+.left-rail-btn svg {
+  width: 26px;
+  height: 26px;
+  stroke: #1b2c89; /* bleu contours */
+  fill: none;
+}
+
+.left-rail-btn.is-active {
+  background: rgba(27, 44, 137, 0.12);
+}
+
+/* =========================================================
+   SIDE PANEL (FILTRES / FAVORIS)
+   ========================================================= */
+
+.side-panel {
+  width: clamp(260px, 24vw, 360px);
+  background: #f7f7ff;
+  border-right: 1px solid #ddd;
+  padding: 16px;
+  overflow: hidden; /* pas de scroll */
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Sécurité anti-débordement */
+.side-panel * {
+  min-width: 0;
+}
+
+/* Titres */
+.side-panel h2 {
+  margin: 0 0 8px 0;
+}
+
+.side-panel h3 {
+  margin: 0 0 6px 0;
+}
+
+/* =========================================================
+   FILTERS (ESPACEMENT AMÉLIORÉ)
+   ========================================================= */
+
+.filter-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;              /* espace interne */
+  margin-bottom: 20px;   /* espace entre catégories */
+}
+
+.filter-block:last-of-type {
+  margin-bottom: 16px;   /* un peu moins avant le bouton */
+}
+
+.filter-block h3 {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+}
+
+/* Min / Max */
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.filter-row input {
+  width: 100%;
+  padding: 8px 10px;
+}
+
+/* Chambres */
+.filter-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Checkbox */
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+
+.filter-submit-btn {
+  margin-top: auto;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #1b2c89;
+  color: white;
+  cursor: pointer;
+}
+
+/* =========================================================
+   FAVORITES
+   ========================================================= */
+
+.favorites-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.favorites-item + .favorites-item {
+  margin-top: 10px;
+}
+
+.favorites-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.favorites-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* =========================================================
+   HOME PAGE
+   ========================================================= */
+
+.home-main {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* =========================================================
+   MAP VIEW
+   ========================================================= */
+
+.map-view {
+  position: absolute;
+  inset: 0;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================================================
+   TOP SEARCH BAR (FLOATING)
+   ========================================================= */
+
+.top-search {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: transparent;
+}
+
+.top-search-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(80, 80, 200, 0.15);
+  min-width: 520px;
+}
+
+/* Select + input */
+.top-search-select,
+.top-search-input {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+}
+
+.top-search-input {
+  flex: 1;                 /* 🔥 prend tout l’espace restant */
+}
+
+.top-search-input:focus {
+  outline: none;
+}
+
+/* Bouton loupe */
+.top-search-icon {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-search-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: #1b2c89;         /* bleu contours */
+  fill: none;
+}
+
+/* =========================================================
+   COLOC PREVIEW BAR (BOTTOM)
+   ========================================================= */
+
+.coloc-preview {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #1b2c89;
+  color: white;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border: none;
+  cursor: pointer;
+}
+
+.coloc-preview-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coloc-preview-logo-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coloc-preview-logo-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coloc-preview-section h3,
+.coloc-preview-section h4 {
+  margin: 0 0 4px 0;
+}
+
+.coloc-preview-section p {
+  margin: 0;
+  font-size: 0.9rem;
 }
