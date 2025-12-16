@@ -20,7 +20,11 @@ const HomePage = () => {
 
   return (
     <div className="home-main">
-      <MapView onSelectColoc={setSelectedColocId} />
+      <MapView
+        onSelectColoc={setSelectedColocId}
+        selectedColocId={selectedColocId}
+      />
+
       <TopSearchBar />
       {selectedColoc && <ColocPreviewBar coloc={selectedColoc} />}
     </div>

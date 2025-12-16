@@ -238,6 +238,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 0;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
 }
 
 /* =========================================================
@@ -249,7 +255,7 @@ body {
   top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 2000;
   background: transparent;
 }
 
@@ -260,7 +266,8 @@ body {
   height: 48px;
   padding: 8px 12px;
   border-radius: 999px;
-  background: rgba(80, 80, 200, 0.15);
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   min-width: 520px;
 }
 
@@ -270,10 +277,11 @@ body {
   border: none;
   background: transparent;
   font-size: 14px;
+  color: #1b2c89;
 }
 
 .top-search-input {
-  flex: 1;                 /* 🔥 prend tout l’espace restant */
+  flex: 1;                
 }
 
 .top-search-input:focus {

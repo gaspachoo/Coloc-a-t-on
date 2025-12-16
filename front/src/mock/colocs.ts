@@ -7,6 +7,8 @@ export type Coloc = {
   buzzerInfo: string;
   roommates: string;
   logoUrl: string;
+  lat: number;
+  lng: number;
 };
 
 export const MOCK_COLOCS: Coloc[] = [
@@ -17,6 +19,8 @@ export const MOCK_COLOCS: Coloc[] = [
     buzzerInfo: "En bas à droite de l'interphone — Sonnette : Merval",
     roommates: "Jean, Michel, Gilbert",
     logoUrl: colocLogoPlaceholder,
+    lat: 43.30010,
+    lng: 5.38693,
   },
   {
     id: "les-rissons",
@@ -25,6 +29,8 @@ export const MOCK_COLOCS: Coloc[] = [
     buzzerInfo: "Sonnette : Coloc Rissons",
     roommates: "Alice, Bob",
     logoUrl: colocLogoPlaceholder,
+    lat: 43.29821,
+    lng: 5.37230,
   },
   {
     id: "la-ratz",
@@ -33,8 +39,11 @@ export const MOCK_COLOCS: Coloc[] = [
     buzzerInfo: "Sonnette : La Ratz",
     roommates: "Chloé, David",
     logoUrl: colocLogoPlaceholder,
+    lat: 43.30123,
+    lng: 5.37520,
   },
 ];
+
 
 export const getColocById = (id: string): Coloc | null =>
   MOCK_COLOCS.find((c) => c.id === id) ?? null;
