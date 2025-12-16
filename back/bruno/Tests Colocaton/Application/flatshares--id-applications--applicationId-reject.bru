@@ -1,7 +1,7 @@
 meta {
-  name: flatshares/:id/applications/:applicationId/accept Copy
+  name: flatshares/:id/applications/:applicationId/reject
   type: http
-  seq: 5
+  seq: 4
 }
 
 patch {
@@ -21,4 +21,5 @@ headers {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

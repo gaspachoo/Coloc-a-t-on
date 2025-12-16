@@ -1,17 +1,18 @@
 meta {
-  name: flatshares/:id/photos
+  name: flatshares/:id/photos/:photoId/position
   type: http
-  seq: 8
+  seq: 10
 }
 
-post {
-  url: {{base_url}}/api/flatshares/:id/photos
+patch {
+  url: {{base_url}}/api/flatshares/:id/photos/:photoId/position
   body: multipartForm
   auth: none
 }
 
 params:path {
-  id: 1
+  id: 
+  photoId: 
 }
 
 headers {

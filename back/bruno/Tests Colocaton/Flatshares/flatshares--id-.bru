@@ -1,20 +1,24 @@
 meta {
-  name: flatshares_1
+  name: flatshares/:id/
   type: http
   seq: 2
 }
 
-post {
-  url: {{base_url}}/api/flatshares/
-  body: json
+get {
+  url: {{base_url}}/api/flatshares/:id/
+  body: text
   auth: none
+}
+
+params:path {
+  id: 1
 }
 
 headers {
   Authorization: Bearer 9eea2427f43950fb84346989edf4bc30a93967561069fddaaf7cef9087515769fa9f611142c1e87cf39782765c092a99
 }
 
-body:json {
+body:text {
   {
       "title" : "La coloc de gaspard",
       "description" : "La coloc du futur",
@@ -31,4 +35,5 @@ body:json {
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

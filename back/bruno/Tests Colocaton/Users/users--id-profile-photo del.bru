@@ -1,10 +1,10 @@
 meta {
-  name: users/:id/profile-photo
+  name: users/:id/profile-photo del
   type: http
-  seq: 5
+  seq: 6
 }
 
-post {
+delete {
   url: {{base_url}}/api/users/:id/profile-photo
   body: multipartForm
   auth: none
