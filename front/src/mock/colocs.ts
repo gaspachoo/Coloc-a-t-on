@@ -6,7 +6,7 @@ export type Coloc = {
   address: string;
   buzzerInfo: string;
   roommates: string;
-  logoUrl: string;
+  logoUrl: string | null;
   lat: number;
   lng: number;
 };
@@ -19,8 +19,8 @@ export const MOCK_COLOCS: Coloc[] = [
     buzzerInfo: "En bas à droite de l'interphone — Sonnette : Merval",
     roommates: "Jean, Michel, Gilbert",
     logoUrl: colocLogoPlaceholder,
-    lat: 43.30010,
-    lng: 5.38693,
+    lat: 43.299957967246286, 
+    lng: 5.386861096231719
   },
   {
     id: "les-rissons",
@@ -28,7 +28,7 @@ export const MOCK_COLOCS: Coloc[] = [
     address: "12 rue des Rissons",
     buzzerInfo: "Sonnette : Coloc Rissons",
     roommates: "Alice, Bob",
-    logoUrl: colocLogoPlaceholder,
+    logoUrl: null,
     lat: 43.29821,
     lng: 5.37230,
   },

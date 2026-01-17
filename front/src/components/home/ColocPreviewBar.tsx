@@ -17,7 +17,14 @@ const ColocPreviewBar = ({ coloc }: ColocPreviewBarProps) => {
       {/* Logo + nom à gauche */}
       <div className="coloc-preview-main">
         <div className="coloc-preview-logo-wrapper">
-          <img src={coloc.logoUrl} alt={`Logo de la coloc ${coloc.name}`} />
+          {coloc.logoUrl ? (
+            <img
+              src={coloc.logoUrl}
+              alt={`Logo de la coloc ${coloc.name}`}
+            />
+          ) : (
+            <div className="coloc-preview-logo-fallback" />
+          )}
         </div>
         <div>
           <h3>{coloc.name}</h3>

@@ -10,11 +10,15 @@ const SidebarFavorites = () => {
         {MOCK_COLOCS.map((coloc) => (
           <li key={coloc.id} className="favorites-item">
             <Link to={`/coloc/${coloc.id}`} className="favorites-link">
-              <img
-                src={coloc.logoUrl}
-                alt={`Logo de ${coloc.name}`}
-                className="favorites-logo"
-              />
+              {coloc.logoUrl ? (
+                <img
+                  src={coloc.logoUrl}
+                  alt={`Logo de ${coloc.name}`}
+                  className="favorites-logo"
+                />
+              ) : (
+                <div className="favorites-logo-fallback" aria-label={`Logo de ${coloc.name}`} />
+              )}
               <span>{coloc.name}</span>
             </Link>
           </li>

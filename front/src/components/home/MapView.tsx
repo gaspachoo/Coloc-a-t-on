@@ -8,14 +8,6 @@ type MapViewProps = {
   selectedColocId: string | null;
 };
 
-const defaultIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-
 function FlyToColoc({
   lat,
   lng,
@@ -32,20 +24,33 @@ function FlyToColoc({
   return null;
 }
 
+function createColocDivIcon(logoUrl?: string | null) {
+  const hasLogo = Boolean(logoUrl);
+
+  const html = hasLogo
+    ? `<div class="coloc-marker"><img src="${logoUrl}" alt="coloc logo" /></div>`
+    : `<div class="coloc-marker"><div class="coloc-marker-fallback"></div></div>`;
+
+  return L.divIcon({
+    html,
+    className: "", 
+    iconSize: [22, 22],
+    iconAnchor: [11, 11],
+    popupAnchor: [11, -8],
+  });
+}
 
 const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
-  // centre par défaut (à ajuster)
   const INITIAL_CENTER: [number, number] = [
     43.29782056537604,
     5.380969165551183,
   ];
 
-
   return (
     <div className="map-view">
       <MapContainer
         center={INITIAL_CENTER}
-        zoom={14}
+        zoom={15}
         scrollWheelZoom={true}
         style={{ height: "100%", width: "100%" }}
       >
@@ -55,9 +60,8 @@ const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
         />
 
         {selectedColocId && (() => {
-          const coloc = MOCK_COLOCS.find(c => c.id === selectedColocId);
+          const coloc = MOCK_COLOCS.find((c) => c.id === selectedColocId);
           if (!coloc) return null;
-
           return <FlyToColoc lat={coloc.lat} lng={coloc.lng} />;
         })()}
 
@@ -65,7 +69,7 @@ const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
           <Marker
             key={c.id}
             position={[c.lat, c.lng]}
-            icon={defaultIcon}
+            icon={createColocDivIcon(c.logoUrl)}
             eventHandlers={{
               click: () => onSelectColoc(c.id),
             }}
@@ -78,10 +82,6 @@ const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
           </Marker>
         ))}
       </MapContainer>
-
-      {/* Bonus : si tu veux recentrer automatiquement quand on clique,
-          on pourra brancher FlyTo via un state "selectedColoc" dans HomePage.
-          (Je te donne ça juste après si tu veux.) */}
     </div>
   );
 };
