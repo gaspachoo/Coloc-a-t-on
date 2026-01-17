@@ -34,7 +34,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         onSettings={() => alert("Paramètres (à faire)")}
       />
 
-      <SidePanel panelMode={panelMode} isOpen={isPanelOpen} />
+      <SidePanel
+        panelMode={panelMode}
+        isOpen={isPanelOpen}
+        onClosePanel={() => setIsPanelOpen(false)}
+      />
 
       <main className="app-content">{children}</main>
     </div>

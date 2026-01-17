@@ -1,15 +1,35 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MOCK_COLOCS } from "../../mock/colocs";
+import { useUi } from "../../context/uiContext";
 
-const SidebarFavorites = () => {
-  // pour l'instant, on suppose que toutes les colocs mock sont des favoris
+type Props = {
+  onClosePanel: () => void;
+};
+
+const SidebarFavorites = ({ onClosePanel }: Props) => {
+  const navigate = useNavigate();
+  const { selectedColocId, setSelectedColocId } = useUi();
+
+  const handlePick = (colocId: string) => {
+    setSelectedColocId(colocId); // sélectionne -> MapView flyTo + preview
+    navigate("/");               // s’assure qu’on est sur la carte
+    onClosePanel();              // ferme le panneau
+  };
+
   return (
     <div>
       <h2>Favoris</h2>
       <ul className="favorites-list">
         {MOCK_COLOCS.map((coloc) => (
           <li key={coloc.id} className="favorites-item">
-            <Link to={`/coloc/${coloc.id}`} className="favorites-link">
+            <button
+              type="button"
+              className={`favorites-button ${
+                coloc.id === selectedColocId ? "is-active" : ""
+              }`}
+              onClick={() => handlePick(coloc.id)}
+              title={`Voir ${coloc.name} sur la carte`}
+            >
               {coloc.logoUrl ? (
                 <img
                   src={coloc.logoUrl}
@@ -17,10 +37,13 @@ const SidebarFavorites = () => {
                   className="favorites-logo"
                 />
               ) : (
-                <div className="favorites-logo-fallback" aria-label={`Logo de ${coloc.name}`} />
+                <div
+                  className="favorites-logo-fallback"
+                  aria-label={`Logo de ${coloc.name}`}
+                />
               )}
               <span>{coloc.name}</span>
-            </Link>
+            </button>
           </li>
         ))}
       </ul>

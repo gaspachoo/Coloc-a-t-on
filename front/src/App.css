@@ -223,6 +223,29 @@ body {
   background: #1b2c89;
 }
 
+.favorites-button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.favorites-button:hover {
+  background: rgba(27, 44, 137, 0.08);
+}
+
+.favorites-button.is-active {
+  background: rgba(27, 44, 137, 0.14);
+  outline: 1px solid rgba(27, 44, 137, 0.25);
+}
+
+
 
 /* =========================================================
    HOME PAGE
@@ -404,3 +427,12 @@ body {
   background: #1b2c89;
 }
 
+/* Marqueur actif */
+.coloc-marker.is-active {
+  width: 56px;
+  height: 56px;
+  border-width: 4px;
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.22),
+    0 0 0 6px rgba(27, 44, 137, 0.22); /* halo bleu */
+}

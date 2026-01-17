@@ -6,15 +6,18 @@ export type PanelMode = "filters" | "favorites" | null;
 type SidePanelProps = {
   panelMode: PanelMode;
   isOpen: boolean;
+  onClosePanel: () => void;
 };
 
-const SidePanel = ({ panelMode, isOpen }: SidePanelProps) => {
+const SidePanel = ({ panelMode, isOpen, onClosePanel }: SidePanelProps) => {
   if (!isOpen || !panelMode) return null;
 
   return (
     <aside className="side-panel">
       {panelMode === "filters" && <SidebarFilters />}
-      {panelMode === "favorites" && <SidebarFavorites />}
+      {panelMode === "favorites" && (
+        <SidebarFavorites onClosePanel={onClosePanel} />
+      )}
     </aside>
   );
 };

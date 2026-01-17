@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MOCK_COLOCS } from "../../mock/colocs";
+import { useEffect, useRef } from "react";
 
 type MapViewProps = {
   onSelectColoc: (colocId: string) => void;
@@ -24,27 +25,48 @@ function FlyToColoc({
   return null;
 }
 
-function createColocDivIcon(logoUrl?: string | null) {
+function createColocDivIcon(logoUrl?: string | null, isActive?: boolean) {
+  const size = isActive ? 56 : 44;
+  const activeClass = isActive ? " is-active" : "";
+
   const hasLogo = Boolean(logoUrl);
 
   const html = hasLogo
-    ? `<div class="coloc-marker"><img src="${logoUrl}" alt="coloc logo" /></div>`
-    : `<div class="coloc-marker"><div class="coloc-marker-fallback"></div></div>`;
+    ? `<div class="coloc-marker${activeClass}">
+         <img src="${logoUrl}" alt="coloc logo" />
+       </div>`
+    : `<div class="coloc-marker${activeClass}">
+         <div class="coloc-marker-fallback"></div>
+       </div>`;
 
   return L.divIcon({
     html,
-    className: "", 
-    iconSize: [22, 22],
-    iconAnchor: [11, 11],
-    popupAnchor: [11, -8],
+    className: "",
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+
   });
 }
 
 const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
+  const markerRefs = useRef<Record<string, L.Marker | null>>({});
+
   const INITIAL_CENTER: [number, number] = [
     43.29782056537604,
     5.380969165551183,
   ];
+
+  useEffect(() => {
+  if (!selectedColocId) return;
+
+  const marker = markerRefs.current[selectedColocId];
+  if (!marker) return;
+
+  setTimeout(() => {
+    marker.openPopup();
+  }, 0);
+}, [selectedColocId]);
 
   return (
     <div className="map-view">
@@ -69,9 +91,18 @@ const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
           <Marker
             key={c.id}
             position={[c.lat, c.lng]}
-            icon={createColocDivIcon(c.logoUrl)}
+            icon={createColocDivIcon(c.logoUrl, c.id === selectedColocId)}
+            zIndexOffset={c.id === selectedColocId ? 1000 : 0}
+            ref={(ref) => {
+              markerRefs.current[c.id] = ref;
+            }}
             eventHandlers={{
-              click: () => onSelectColoc(c.id),
+              click: (e) => {
+                onSelectColoc(c.id);
+                setTimeout(() => {
+                  (e.target as L.Marker).openPopup();
+                }, 0);
+              },
             }}
           >
             <Popup>

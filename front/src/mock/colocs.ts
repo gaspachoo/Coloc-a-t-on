@@ -19,8 +19,8 @@ export const MOCK_COLOCS: Coloc[] = [
     buzzerInfo: "En bas à droite de l'interphone — Sonnette : Merval",
     roommates: "Jean, Michel, Gilbert",
     logoUrl: colocLogoPlaceholder,
-    lat: 43.299957967246286, 
-    lng: 5.386861096231719
+    lat: 43.299745221592055, 
+    lng: 5.386925472729479
   },
   {
     id: "les-rissons",
