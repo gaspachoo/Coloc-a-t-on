@@ -1,34 +1,23 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { MOCK_COLOCS } from "../../mock/colocs";
 import { useEffect, useRef } from "react";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import L from "leaflet";
+import type { Coloc } from "../../mock/colocs";
 
 type MapViewProps = {
+  colocs: Coloc[];
   onSelectColoc: (colocId: string) => void;
   selectedColocId: string | null;
 };
 
-function FlyToColoc({
-  lat,
-  lng,
-}: {
-  lat: number;
-  lng: number;
-}) {
+function FlyToColoc({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
-
-  map.flyTo([lat, lng], Math.max(map.getZoom(), 15), {
-    duration: 0.6,
-  });
-
+  map.flyTo([lat, lng], Math.max(map.getZoom(), 15), { duration: 0.6 });
   return null;
 }
 
 function createColocDivIcon(logoUrl?: string | null, isActive?: boolean) {
   const size = isActive ? 56 : 44;
   const activeClass = isActive ? " is-active" : "";
-
   const hasLogo = Boolean(logoUrl);
 
   const html = hasLogo
@@ -43,51 +32,53 @@ function createColocDivIcon(logoUrl?: string | null, isActive?: boolean) {
     html,
     className: "",
     iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -size / 2],
-
+    iconAnchor: [size / 2, size], // bas-centre
+    popupAnchor: [0, -size],      // popup centré au-dessus
   });
 }
 
-const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
-  const markerRefs = useRef<Record<string, L.Marker | null>>({});
-
+const MapView = ({ colocs, onSelectColoc, selectedColocId }: MapViewProps) => {
   const INITIAL_CENTER: [number, number] = [
     43.29782056537604,
     5.380969165551183,
   ];
 
+  // Registry des markers pour ouvrir un popup depuis la sidebar (favoris)
+  const markerRefs = useRef<Record<string, L.Marker | null>>({});
+
+  // Ouvre le popup quand la sélection change (ex: clic favori)
   useEffect(() => {
-  if (!selectedColocId) return;
+    if (!selectedColocId) return;
 
-  const marker = markerRefs.current[selectedColocId];
-  if (!marker) return;
+    const marker = markerRefs.current[selectedColocId];
+    if (!marker) return;
 
-  setTimeout(() => {
-    marker.openPopup();
-  }, 0);
-}, [selectedColocId]);
+    setTimeout(() => {
+      marker.openPopup();
+    }, 0);
+  }, [selectedColocId]);
+
+  const selectedColoc =
+    selectedColocId ? colocs.find((c) => c.id === selectedColocId) : null;
 
   return (
     <div className="map-view">
       <MapContainer
         center={INITIAL_CENTER}
-        zoom={15}
+        zoom={14.5}
         scrollWheelZoom={true}
         style={{ height: "100%", width: "100%" }}
       >
         <TileLayer
-          attribution='&copy; OpenStreetMap contributors'
+          attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {selectedColocId && (() => {
-          const coloc = MOCK_COLOCS.find((c) => c.id === selectedColocId);
-          if (!coloc) return null;
-          return <FlyToColoc lat={coloc.lat} lng={coloc.lng} />;
-        })()}
+        {/* Recentrage auto sur coloc sélectionnée */}
+        {selectedColoc && <FlyToColoc lat={selectedColoc.lat} lng={selectedColoc.lng} />}
 
-        {MOCK_COLOCS.map((c) => (
+        {/* Marqueurs filtrés */}
+        {colocs.map((c) => (
           <Marker
             key={c.id}
             position={[c.lat, c.lng]}
@@ -97,10 +88,12 @@ const MapView = ({ onSelectColoc, selectedColocId }: MapViewProps) => {
               markerRefs.current[c.id] = ref;
             }}
             eventHandlers={{
-              click: (e) => {
+              click: () => {
                 onSelectColoc(c.id);
+                // ouvre le popup même si l'icône se met à jour (actif)
                 setTimeout(() => {
-                  (e.target as L.Marker).openPopup();
+                  const marker = markerRefs.current[c.id];
+                  marker?.openPopup();
                 }, 0);
               },
             }}

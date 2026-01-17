@@ -178,6 +178,7 @@ body {
 
 
 .filter-submit-btn {
+  width: 100%;
   margin-top: auto;
   padding: 10px;
   border-radius: 8px;
@@ -186,6 +187,42 @@ body {
   color: white;
   cursor: pointer;
 }
+
+.filter-chip {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #999;
+  background: white;
+  cursor: pointer;
+}
+
+.filter-chip.is-selected {
+  border-color: #1b2c89;
+  background: rgba(27, 44, 137, 0.14);
+}
+
+.filter-hint {
+  margin: 6px 0 0 0;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.filter-reset-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(27, 44, 137, 0.5);
+  background: white;
+  color: #1b2c89;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.filter-reset-btn:hover {
+  background: rgba(27, 44, 137, 0.06);
+}
+
 
 /* =========================================================
    FAVORITES
