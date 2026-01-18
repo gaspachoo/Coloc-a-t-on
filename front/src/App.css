@@ -17,7 +17,7 @@ body,
 }
 
 body {
-  overflow: hidden; /* 🔒 aucune page ne défile */
+  overflow: hidden; /* ucune page ne défile */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
 }
@@ -374,63 +374,192 @@ body {
 }
 
 /* =========================================================
-   COLOC PREVIEW BAR (BOTTOM)
+   COLOC PREVIEW BAR (FIXED SECTIONS, NO OVERFLOW)
    ========================================================= */
 
 .coloc-preview {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+
+  height: 132px;
   background: #1b2c89;
   color: white;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
+
+  border-radius: 18px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+
   border: none;
   cursor: pointer;
-}
+  text-align: left;
 
-.coloc-preview-main {
-  display: flex;
+  display: grid;
+
+  /* Fixes pour ce qui doit rester stable + flex pour textes */
+  grid-template-columns:
+    80px      /* 1 logo */
+    160px     /* 2 nom */
+    190px     /* 3 favoris */
+    150px     /* 4 badges */
+    1.2fr     /* 5 adresse */
+    1.8fr     /* 6 sonnette */
+    1.2fr     /* 7 colocataires */
+    210px;    /* 8 photo */
+
+  gap: 14px;
   align-items: center;
-  gap: 12px;
+  padding: 14px;
+  box-sizing: border-box;
+
+  overflow: hidden; /* rien ne déborde */
 }
 
-.coloc-preview-logo-wrapper {
-  width: 56px;
-  height: 56px;
+/* essentiel pour que l'ellipsis fonctionne en grid */
+.coloc-preview > * {
+  min-width: 0;
+}
+
+/* 1) logo rond */
+.cp-logo {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.coloc-preview-logo-wrapper img {
+.cp-logo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.coloc-preview-section h3,
-.coloc-preview-section h4 {
-  margin: 0 0 4px 0;
-}
-
-.coloc-preview-section p {
-  margin: 0;
-  font-size: 0.9rem;
-}
-
-.coloc-preview-logo-fallback {
-  width: 24px;
-  height: 24px;
+.cp-logo-fallback {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: #1b2c89;
+  background: white;
+  opacity: 0.95;
 }
+
+/* 2) nom */
+.cp-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.05;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 3) favoris */
+.cp-fav {
+  display: flex;
+  align-items: center;
+}
+
+.cp-fav-btn {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-fav-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* 4) badges verticaux */
+.cp-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.cp-badge {
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cp-badge-ateuf {
+  background: rgba(255, 255, 255, 0.92);
+  color: #1b2c89;
+  border-color: white;
+  font-weight: 700;
+}
+
+/* 5-7) champs texte : label + valeur ellipsée */
+.cp-label {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.cp-value {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 8) photo : toujours contenue */
+.cp-photo {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.cp-photo-img,
+.cp-photo-fallback {
+  width: 196px;
+  height: 96px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+
+@media (max-width: 1440px) {
+  .coloc-preview {
+    grid-template-columns:
+      72px      /* logo */
+      140px     /* nom */
+      170px     /* favoris */
+      140px     /* badges */
+      1.1fr     /* adresse */
+      1.6fr     /* sonnette */
+      1.1fr     /* colocataires */
+      180px;    /* photo */
+    gap: 12px;
+  }
+
+  .cp-photo-img,
+  .cp-photo-fallback {
+    height: 88px;
+  }
+}
+
+
 
 
 /* =========================================================
@@ -472,4 +601,323 @@ body {
   box-shadow:
     0 8px 20px rgba(0, 0, 0, 0.22),
     0 0 0 6px rgba(27, 44, 137, 0.22); /* halo bleu */
+}
+
+/* =========================================================
+   COLOC DETAIL PAGE (NO VERTICAL SCROLL)
+   ========================================================= */
+
+.coloc-page {
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.coloc-page-card {
+  width: min(1100px, 100%);
+  height: calc(100vh - 40px);
+  background: #ffffff;
+  border: 1px solid #e6e6ef;
+  border-radius: 18px;
+  padding: 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Header */
+.coloc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.coloc-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.coloc-header-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.coloc-map-btn {
+  border: 1px solid rgba(27, 44, 137, 0.5);
+  background: white;
+  color: #1b2c89;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.coloc-map-btn:hover {
+  background: rgba(27, 44, 137, 0.06);
+}
+
+.coloc-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%; /* rond */
+  overflow: hidden;
+  border: 2px solid rgba(27, 44, 137, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  flex: 0 0 auto;
+}
+
+.coloc-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coloc-logo-fallback {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #1b2c89;
+}
+
+.coloc-title {
+  min-width: 0;
+}
+
+.coloc-title h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.coloc-subtitle {
+  margin: 6px 0 0 0;
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.coloc-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.coloc-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(27, 44, 137, 0.25);
+  background: rgba(27, 44, 137, 0.06);
+  font-size: 13px;
+}
+
+.coloc-badge-ateuf {
+  border-color: rgba(27, 44, 137, 0.6);
+}
+
+/* Ligne 2 : 3 colonnes */
+.coloc-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  gap: 14px;
+  height: 230px;
+}
+
+/* Sections */
+.coloc-section {
+  border: 1px solid #ededf6;
+  border-radius: 14px;
+  padding: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; 
+}
+
+.coloc-section h2 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.coloc-section p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.coloc-section-scrollbar {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto; /* scroll interne */
+  padding-right: 6px; /* espace pour scrollbar */
+}
+
+
+/* Ligne 3 : carrousel */
+.coloc-row-3 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  overflow: hidden; /* pas de scroll vertical */
+}
+
+.coloc-row-3 h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+/* Carrousel horizontal */
+.coloc-carousel {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;            /* ✅ scroll horizontal autorisé */
+  overflow-y: hidden;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+}
+
+.coloc-photo {
+  flex: 0 0 320px;
+  height: 220px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #ededf6;
+  scroll-snap-align: start;
+  background: #f4f4fb;
+  padding: 0;
+  cursor: pointer;
+}
+
+.coloc-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.coloc-fav-btn {
+  border: 1px solid rgba(27, 44, 137, 0.5);
+  background: rgba(27, 44, 137, 0.06);
+  color: #1b2c89;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.coloc-fav-btn:hover {
+  background: rgba(27, 44, 137, 0.1);
+}
+
+/* Icônes dans boutons */
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* Icônes à côté des titres */
+.title-icon {
+  width: 16px;
+  height: 16px;
+  stroke: #1b2c89;
+  fill: none;
+  margin-left: 2px;
+  vertical-align: -2px;
+  opacity: 0.9;
+}
+
+
+
+/* =========================================================
+   LIGHTBOX (PHOTO MODAL)
+   ========================================================= */
+
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.lightbox-content {
+  position: relative;
+  width: min(1100px, 92vw);
+  height: min(720px, 84vh);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: white;
+  font-size: 18px;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.lightbox-prev {
+  left: -14px;
+}
+
+.lightbox-next {
+  right: -14px;
+}
+
+.lightbox-counter {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 13px;
+  opacity: 0.9;
 }
