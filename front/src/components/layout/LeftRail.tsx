@@ -5,7 +5,7 @@ import {
   User,
   Settings,
 } from "lucide-react";
-import colocSiteLogo from "../../assets/react.svg";
+import colocSiteLogo from "../../assets/logo-projet-coloc.png";
 
 export type PanelMode = "filters" | "favorites" | null;
 
