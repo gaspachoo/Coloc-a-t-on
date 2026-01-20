@@ -1,79 +1,79 @@
 ## Backend (ExpressJS)
 
-To migrate DB, please type:
+To migrate the DB, please run:
 
 ```bash
- npx prisma migrate dev --name init
+npx prisma migrate dev --name init
 ```
 
-It way be required to reset the database if there is an issue (more probably compatibility issue).
+It may be necessary to reset the database if there is an issue (most likely a compatibility issue).
 
-To reset the database, please type:
+To reset the database, please run:
 
 ```bash
- npx prisma migrate reset
+npx prisma migrate reset
 ```
 
-To generate prisma client, please type:
+To generate the Prisma client, please run:
 
 ```bash
 npx prisma generate
 ```
 
-To launch the server please type:
+To start the server, please run:
 
 ```bash
 npm install
 npx ts-node app.ts
 ```
 
-Aller ensuite sur le site : http://localhost:3000/
+Then go to the site: http://localhost:3000/
 
-## Résumé des endpoints (API)
+## Endpoints Summary (API)
 
-- Base URL: `http://localhost:3000/api`
-- Tous les endpoints renvoient du JSON.
-- Les routes marquées "Auth" nécessitent une authentification (token via cookie si configuré).
+* Base URL: `http://localhost:3000/api`
+* All endpoints return JSON.
+* Routes marked as "Auth" require authentication (token via cookie if configured).
 
 ### Auth
 
-- POST `/auth/signup` : inscription d'un utilisateur.
-- POST `/auth/login` : connexion (retourne le token de session).
-- POST `/auth/logout` : déconnexion. Auth requis.
-- GET `/auth/me` : informations de l'utilisateur connecté. Auth requis.
+* POST `/auth/signup`: user registration.
+* POST `/auth/login`: login (returns the session token).
+* POST `/auth/logout`: logout. Auth required.
+* GET `/auth/me`: information about the currently logged-in user. Auth required.
 
 ### Users
 
-- GET `/users` : lister les utilisateurs.
-- GET `/users/:id` : récupérer un utilisateur par ID.
-- PATCH `/users/:id` : mettre à jour un utilisateur. Auth + propriétaire requis.
-- DELETE `/users/:id` : supprimer un utilisateur. Auth + propriétaire requis.
-- POST `/users/:id/profile-photo` : téléverser la photo de profil. Auth + propriétaire requis. Attendu: multipart/form-data avec champ `photo`.
-- DELETE `/users/:id/profile-photo` : supprimer la photo de profil. Auth + propriétaire requis.
+* GET `/users`: list users.
+* GET `/users/:id`: get a user by ID.
+* PATCH `/users/:id`: update a user. Auth + owner required.
+* DELETE `/users/:id`: delete a user. Auth + owner required.
+* POST `/users/:id/profile-photo`: upload a profile photo. Auth + owner required. Expected: multipart/form-data with `photo` field.
+* DELETE `/users/:id/profile-photo`: delete the profile photo. Auth + owner required.
 
 ### Flatshares
 
-- GET `/flatshares` : lister/rechercher les colocations.
-- GET `/flatshares/:id` : récupérer une colocation par ID.
-- GET `/flatshares/:id/members` : lister les membres d'une colocation.
-- GET `/flatshares/:id/photos` : lister les photos d'une colocation.
-- POST `/flatshares` : créer une colocation. Auth requis.
-- PATCH `/flatshares/:id` : mettre à jour une colocation. Auth + membre requis.
-- DELETE `/flatshares/:id` : supprimer une colocation. Auth + membre requis.
-- POST `/flatshares/:id/photos` : ajouter une photo à la colocation. Auth + membre requis. Attendu: multipart/form-data avec champ `photo`.
-- DELETE `/flatshares/:id/photos/:photoId` : supprimer une photo. Auth + membre requis.
-- PATCH `/flatshares/:id/photos/:photoId/position` : mettre à jour la position d'une photo. Auth + membre requis.
-- POST `/flatshares/:id/applications` : candidater à une colocation. Auth requis.
-- GET `/flatshares/:id/applications` : lister les candidatures d'une colocation. Auth requis.
-- PATCH `/flatshares/:id/applications/:applicationId/accept` : accepter une candidature. Auth requis.
-- PATCH `/flatshares/:id/applications/:applicationId/reject` : rejeter une candidature. Auth requis.
-- GET `/flatshares/user/applications` : lister les candidatures de l'utilisateur courant. Auth requis.
+* GET `/flatshares`: list/search flatshares.
+* GET `/flatshares/:id`: get a flatshare by ID.
+* GET `/flatshares/:id/members`: list members of a flatshare.
+* GET `/flatshares/:id/photos`: list photos of a flatshare.
+* POST `/flatshares`: create a flatshare. Auth required.
+* PATCH `/flatshares/:id`: update a flatshare. Auth + member required.
+* DELETE `/flatshares/:id`: delete a flatshare. Auth + member required.
+* POST `/flatshares/:id/photos`: add a photo to the flatshare. Auth + member required. Expected: multipart/form-data with `photo` field.
+* DELETE `/flatshares/:id/photos/:photoId`: delete a photo. Auth + member required.
+* PATCH `/flatshares/:id/photos/:photoId/position`: update a photo position. Auth + member required.
+* POST `/flatshares/:id/applications`: apply to a flatshare. Auth required.
+* GET `/flatshares/:id/applications`: list applications for a flatshare. Auth required.
+* PATCH `/flatshares/:id/applications/:applicationId/accept`: accept an application. Auth required.
+* PATCH `/flatshares/:id/applications/:applicationId/reject`: reject an application. Auth required.
+* GET `/flatshares/user/applications`: list applications of the current user. Auth required.
 
-### Fichiers statiques (uploads)
+### Static Files (uploads)
 
-- GET `/uploads/...` : accès aux fichiers téléversés (photos de profil et de colocation).
+* GET `/uploads/...`: access uploaded files (profile photos and flatshare photos).
 
-## Variables d'environnement
+## Environment Variables
 
 DB_USER=user
 DB_PASSWORD=chaton123
