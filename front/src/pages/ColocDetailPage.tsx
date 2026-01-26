@@ -1,10 +1,12 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Coloc } from "../mock/colocs";
 import { useUi } from "../context/uiContext";
-import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff } from "lucide-react";
+import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff, Edit } from "lucide-react";
+import { useAuth } from "../context/authContext";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE = API_URL.replace(/\/api$/, "");
 
 const ColocDetailPage = () => {
   const { colocId } = useParams();
@@ -15,6 +17,8 @@ const ColocDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [isMember, setIsMember] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchColoc = async () => {
@@ -50,8 +54,30 @@ const ColocDetailPage = () => {
           rooms: data.bedrooms_count || 0,
           ateuf: data.ambiance === "festive" || data.ambiance === "tres_festive",
           description: data.description || "",
-          photos: [],
+          photos: [], // Sera rempli juste après
         };
+
+        // Vérifier si l'utilisateur est membre
+        if (user) {
+          const membersResponse = await fetch(`${API_URL}/flatshares/${colocId}/members`, {
+            credentials: "include",
+          });
+          if (membersResponse.ok) {
+            const members = await membersResponse.json();
+            const isUserMember = members.some((member: any) => member.id === user.id);
+            setIsMember(isUserMember);
+          }
+        }
+
+        // Charger les photos
+        const photosResponse = await fetch(`${API_URL}/flatshares/${colocId}/photos?t=${Date.now()}`, {
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (photosResponse.ok) {
+          const photos = await photosResponse.json();
+          mappedColoc.photos = photos.map((p: any) => `${API_BASE}/${p.url}`);
+        }
 
         setColoc(mappedColoc);
         setError(null);
@@ -64,7 +90,7 @@ const ColocDetailPage = () => {
     };
 
     fetchColoc();
-  }, [colocId]);
+  }, [colocId, user]);
 
   const closeLightbox = () => setLightboxIndex(null);
 
@@ -157,6 +183,16 @@ const ColocDetailPage = () => {
             >
               Voir sur la carte <Eye className="btn-icon" />
             </button>
+
+              {isMember && (
+                <button
+                  type="button"
+                  className="coloc-edit-btn"
+                  onClick={() => navigate(`/coloc/${coloc.id}/edit`)}
+                >
+                  Éditer <Edit className="btn-icon" />
+                </button>
+              )}
 
             <div className="coloc-badges">
               <span className="coloc-badge">{coloc.rooms} chambres</span>

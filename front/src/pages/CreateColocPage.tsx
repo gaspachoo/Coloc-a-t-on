@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { X, Upload } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
@@ -10,9 +11,11 @@ type AddressSearchResult = {
 };
 
 const CreateColocPage = () => {
+  const { colocId } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isEditMode = !!colocId;
 
   // Form fields
   const [title, setTitle] = useState("");
@@ -28,10 +31,103 @@ const CreateColocPage = () => {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
+  // Photos
+  const [existingPhotos, setExistingPhotos] = useState<Array<{ id: number; url: string; position: number }>>([]);
+  const [newPhotos, setNewPhotos] = useState<File[]>([]);
+  const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
+
   // Address search
   const [addressSearch, setAddressSearch] = useState("");
   const [addressResults, setAddressResults] = useState<AddressSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Charger les données de la coloc si en mode édition
+  useEffect(() => {
+    if (isEditMode && colocId) {
+      const fetchColoc = async () => {
+        try {
+          setIsLoading(true);
+          const response = await fetch(`${API_URL}/flatshares/${colocId}`, {
+            credentials: "include",
+          });
+
+          if (!response.ok) {
+            throw new Error("Colocation introuvable");
+          }
+
+          const data = await response.json();
+          
+          setTitle(data.title || "");
+          setDescription(data.description || "");
+          setRentPerPerson(data.rent_per_person?.toString() || "");
+          setBedroomsCount(data.bedrooms_count?.toString() || "");
+          setAmbiance(data.ambiance || "festive");
+          setStreet(data.street || "");
+          setPostalCode(data.postal_code || "");
+          setCity(data.city || "");
+          setLatitude(data.latitude || "");
+          setLongitude(data.longitude || "");
+
+          // Charger les photos
+          const photosResponse = await fetch(`${API_URL}/flatshares/${colocId}/photos`, {
+            credentials: "include",
+          });
+          if (photosResponse.ok) {
+            const photos = await photosResponse.json();
+            setExistingPhotos(photos);
+          }
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Erreur inconnue");
+          console.error("Erreur:", err);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchColoc();
+    }
+  }, [colocId, isEditMode]);
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setNewPhotos((prev) => [...prev, ...files]);
+      
+      // Créer des URLs de prévisualisation
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPhotoPreviewUrls((prev) => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const handleRemoveNewPhoto = (index: number) => {
+    setNewPhotos((prev) => prev.filter((_, i) => i !== index));
+    setPhotoPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleRemoveExistingPhoto = async (photoId: number) => {
+    if (!colocId) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/flatshares/${colocId}/photos/${photoId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression de la photo");
+      }
+
+      setExistingPhotos((prev) => prev.filter((p) => p.id !== photoId));
+    } catch (err) {
+      console.error("Erreur suppression photo:", err);
+      setError("Impossible de supprimer la photo");
+    }
+  };
 
   const handleAddressSearch = async () => {
     if (!addressSearch.trim()) return;
@@ -85,8 +181,11 @@ const CreateColocPage = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/flatshares`, {
-        method: "POST",
+      const url = isEditMode ? `${API_URL}/flatshares/${colocId}` : `${API_URL}/flatshares`;
+      const method = isEditMode ? "PATCH" : "POST";
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -107,11 +206,26 @@ const CreateColocPage = () => {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Erreur lors de la création");
+        throw new Error(data.error || `Erreur lors de ${isEditMode ? "la modification" : "la création"}`);
       }
 
-      const newColoc = await response.json();
-      navigate(`/`);
+      const coloc = await response.json();
+
+      // Upload des nouvelles photos
+      if (newPhotos.length > 0) {
+        for (const photo of newPhotos) {
+          const formData = new FormData();
+          formData.append("photo", photo);
+          
+          await fetch(`${API_URL}/flatshares/${coloc.id}/photos`, {
+            method: "POST",
+            credentials: "include",
+            body: formData,
+          });
+        }
+      }
+
+      navigate(`/coloc/${coloc.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       console.error("Erreur:", err);
@@ -123,7 +237,7 @@ const CreateColocPage = () => {
   return (
     <div className="create-coloc-page">
       <div className="create-coloc-container">
-        <h1>Créer une colocation</h1>
+        <h1>{isEditMode ? "Modifier la colocation" : "Créer une colocation"}</h1>
 
         {error && <div className="error-message">{error}</div>}
 
@@ -304,6 +418,56 @@ const CreateColocPage = () => {
             </div>
           </div>
 
+          <div className="form-group">
+            <label htmlFor="photos">Photos</label>
+            <div className="photo-upload-section">
+              <input
+                type="file"
+                id="photos"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoChange}
+                style={{ display: "none" }}
+              />
+              <label htmlFor="photos" className="photo-upload-btn">
+                <Upload className="upload-icon" />
+                Ajouter des photos
+              </label>
+              
+              <div className="photos-preview-grid">
+                {/* Photos existantes */}
+                {existingPhotos.map((photo) => (
+                  <div key={photo.id} className="photo-preview">
+                    <img src={photo.url} alt="Photo de la coloc" />
+                    <button
+                      type="button"
+                      className="photo-remove-btn"
+                      onClick={() => handleRemoveExistingPhoto(photo.id)}
+                      title="Supprimer"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+                
+                {/* Nouvelles photos */}
+                {photoPreviewUrls.map((url, index) => (
+                  <div key={`new-${index}`} className="photo-preview">
+                    <img src={url} alt={`Nouvelle photo ${index + 1}`} />
+                    <button
+                      type="button"
+                      className="photo-remove-btn"
+                      onClick={() => handleRemoveNewPhoto(index)}
+                      title="Supprimer"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="form-actions">
             <button
               type="button"
@@ -318,7 +482,9 @@ const CreateColocPage = () => {
               className="btn-submit"
               disabled={isLoading}
             >
-              {isLoading ? "Création..." : "Créer la colocation"}
+              {isLoading 
+                ? (isEditMode ? "Modification..." : "Création...") 
+                : (isEditMode ? "Modifier la colocation" : "Créer la colocation")}
             </button>
           </div>
         </form>

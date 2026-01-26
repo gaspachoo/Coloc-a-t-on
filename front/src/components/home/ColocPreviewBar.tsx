@@ -14,11 +14,20 @@ const ColocPreviewBar = ({ coloc }: Props) => {
   const coverPhoto = coloc.photos?.[0] ?? null;
   const fav = isFavorite(coloc.id);
 
+  const handleOpen = () => navigate(`/coloc/${coloc.id}`);
+
   return (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={0}
       className="coloc-preview"
-      onClick={() => navigate(`/coloc/${coloc.id}`)}
+      onClick={handleOpen}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleOpen();
+        }
+      }}
       aria-label={`Ouvrir la fiche de ${coloc.name}`}
     >
       {/* 1) Logo */}
@@ -86,7 +95,7 @@ const ColocPreviewBar = ({ coloc }: Props) => {
           <div className="cp-photo-fallback" />
         )}
       </div>
-    </button>
+    </div>
   );
 };
 

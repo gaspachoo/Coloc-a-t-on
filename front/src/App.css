@@ -650,16 +650,47 @@ body {
 .coloc-header-right {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.coloc-edit-btn,
+.coloc-fav-btn,
+.coloc-map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(27, 44, 137, 0.16);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.coloc-edit-btn {
+  border-color: rgba(27, 44, 137, 0.35);
+  background: linear-gradient(135deg, #1b2c89, #2f3fb8);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(27, 44, 137, 0.18);
+}
+
+.coloc-edit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(27, 44, 137, 0.24);
+  filter: brightness(1.02);
+}
+
+.coloc-edit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(27, 44, 137, 0.16);
 }
 
 .coloc-map-btn {
   border: 1px solid rgba(27, 44, 137, 0.5);
   background: white;
   color: #1b2c89;
-  padding: 8px 12px;
-  border-radius: 10px;
-  cursor: pointer;
 }
 
 .coloc-map-btn:hover {
@@ -1145,6 +1176,80 @@ body {
   border-radius: 6px;
   color: #c33;
   font-size: 14px;
+}
+
+/* Photo upload section */
+.photo-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.photo-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #5b6fff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.2s;
+  width: fit-content;
+}
+
+.photo-upload-btn:hover {
+  background: #4a5aef;
+}
+
+.upload-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.photos-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.photo-preview {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #e2e8f0;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #e53e3e;
+}
+
+.photo-remove-btn:hover {
+  background: #e53e3e;
+  color: white;
+  transform: scale(1.1);
 }
 
 /* =========================================================

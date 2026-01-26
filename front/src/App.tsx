@@ -17,6 +17,7 @@ const App: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/coloc/:colocId" element={<ColocDetailPage />} />
           <Route path="/create-coloc" element={<CreateColocPage />} />
+            <Route path="/coloc/:colocId/edit" element={<CreateColocPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
