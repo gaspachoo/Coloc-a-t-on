@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LeftRail from "./LeftRail";
 import SidePanel, { type PanelMode } from "./SidePanel";
 import { useUi } from "../../context/uiContext";
 import { useAuth } from "../../context/authContext";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
   const [panelMode, setPanelMode] = useState<PanelMode>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const { triggerResetUI } = useUi();
@@ -29,7 +31,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     if (!user) {
       openLoginModal();
     } else {
-      alert("Profil de " + user.first_name + " (à faire)");
+      navigate("/profile");
     }
   };
 
