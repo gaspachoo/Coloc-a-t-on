@@ -4,8 +4,10 @@ import {
   Star,
   User,
   Settings,
+  LogOut,
 } from "lucide-react";
 import colocSiteLogo from "../../assets/logo-projet-coloc.png";
+import type { User as AuthUser } from "../../context/authContext";
 
 export type PanelMode = "filters" | "favorites" | null;
 
@@ -16,6 +18,8 @@ type LeftRailProps = {
   onToggleFavorites: () => void;
   onProfile: () => void;
   onSettings: () => void;
+  user: AuthUser | null;
+  onLogout: () => Promise<void>;
 };
 
 const LeftRail = ({
@@ -25,8 +29,15 @@ const LeftRail = ({
   onToggleFavorites,
   onProfile,
   onSettings,
+  user,
+  onLogout,
 }: LeftRailProps) => {
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await onLogout();
+    navigate("/");
+  };
 
   return (
     <aside className="left-rail">
@@ -69,6 +80,11 @@ const LeftRail = ({
         <button type="button" className="left-rail-btn" onClick={onSettings} title="Paramètres">
           <Settings />
         </button>
+        {user && (
+          <button type="button" className="left-rail-btn" onClick={handleLogout} title="Déconnexion">
+            <LogOut />
+          </button>
+        )}
       </div>
     </aside>
   );

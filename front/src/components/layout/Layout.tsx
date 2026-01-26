@@ -2,11 +2,13 @@ import { useState } from "react";
 import LeftRail from "./LeftRail";
 import SidePanel, { type PanelMode } from "./SidePanel";
 import { useUi } from "../../context/uiContext";
+import { useAuth } from "../../context/authContext";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [panelMode, setPanelMode] = useState<PanelMode>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const { triggerResetUI } = useUi();
+  const { user, logout, openLoginModal } = useAuth();
 
   const togglePanel = (mode: Exclude<PanelMode, null>) => {
     if (panelMode === mode) {
@@ -23,6 +25,22 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     triggerResetUI(); // <-- will clear coloc preview (HomePage listens)
   };
 
+  const handleProfile = () => {
+    if (!user) {
+      openLoginModal();
+    } else {
+      alert("Profil de " + user.first_name + " (à faire)");
+    }
+  };
+
+  const handleSettings = () => {
+    if (!user) {
+      openLoginModal();
+    } else {
+      alert("Paramètres (à faire)");
+    }
+  };
+
   return (
     <div className="app-shell">
       <LeftRail
@@ -30,8 +48,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         onHomeClick={handleHomeClick}
         onToggleFilters={() => togglePanel("filters")}
         onToggleFavorites={() => togglePanel("favorites")}
-        onProfile={() => alert("Profil (à faire)")}
-        onSettings={() => alert("Paramètres (à faire)")}
+        onProfile={handleProfile}
+        onSettings={handleSettings}
+        user={user}
+        onLogout={logout}
       />
 
       <SidePanel
