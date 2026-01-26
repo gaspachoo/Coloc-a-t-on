@@ -10,7 +10,7 @@ services:
     ports:
       - "${DB_PORT}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/18/main
+      - colocaton-pgdata:/var/lib/postgresql/18/main
 
 volumes:
-  pgdata:
+  colocaton-pgdata:
