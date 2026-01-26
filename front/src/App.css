@@ -921,3 +921,229 @@ body {
   font-size: 13px;
   opacity: 0.9;
 }
+
+/* =========================================================
+   FLOATING ADD BUTTON
+   ========================================================= */
+
+.floating-add-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #5b6fff;
+  color: white;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 1000;
+}
+
+.floating-add-btn:hover {
+  background: #4a5aef;
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.floating-add-btn:active {
+  transform: scale(0.95);
+}
+
+/* =========================================================
+   CREATE COLOC PAGE
+   ========================================================= */
+
+.create-coloc-page {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: #f9f9f9;
+  padding: 40px 20px;
+}
+
+.create-coloc-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.create-coloc-container h1 {
+  margin: 0 0 30px;
+  color: #2d3748;
+  font-size: 28px;
+}
+
+.create-coloc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 24px;
+  margin-top: 8px;
+}
+
+.form-section h3 {
+  margin: 0 0 16px;
+  color: #4a5568;
+  font-size: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #5b6fff;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.address-search {
+  display: flex;
+  gap: 8px;
+}
+
+.address-search input {
+  flex: 1;
+}
+
+.search-btn {
+  padding: 10px 20px;
+  background: #5b6fff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.search-btn:hover {
+  background: #4a5aef;
+}
+
+.search-btn:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+}
+
+.address-results {
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 4px;
+}
+
+.address-result {
+  padding: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background 0.15s;
+}
+
+.address-result:last-child {
+  border-bottom: none;
+}
+
+.address-result:hover {
+  background: #f7fafc;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn-cancel,
+.btn-submit {
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn-cancel {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.btn-cancel:hover {
+  background: #cbd5e0;
+}
+
+.btn-submit {
+  background: #5b6fff;
+  color: white;
+}
+
+.btn-submit:hover {
+  background: #4a5aef;
+}
+
+.btn-cancel:disabled,
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  padding: 12px;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 6px;
+  color: #c33;
+  font-size: 14px;
+}
+

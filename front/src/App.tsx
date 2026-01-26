@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import ColocDetailPage from "./pages/ColocDetailPage";
+import CreateColocPage from "./pages/CreateColocPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import Layout from "./components/layout/Layout";
 import LoginModal from "./components/auth/LoginModal";
@@ -14,6 +15,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/coloc/:colocId" element={<ColocDetailPage />} />
+          <Route path="/create-coloc" element={<CreateColocPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Layout>
