@@ -1,65 +1,124 @@
 import { useMemo, useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getColocById } from "../mock/colocs";
 import type { Coloc } from "../mock/colocs";
 import { useUi } from "../context/uiContext";
 import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff } from "lucide-react";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const ColocDetailPage = () => {
   const { colocId } = useParams();
   const navigate = useNavigate();
   const { setSelectedColocId, toggleFavorite, isFavorite } = useUi();
 
-  const coloc: Coloc | null = useMemo(() => {
-    if (!colocId) return null;
-    return getColocById(colocId);
+  const [coloc, setColoc] = useState<Coloc | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchColoc = async () => {
+      if (!colocId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${API_URL}/flatshares/${colocId}`, {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Colocation introuvable");
+        }
+
+        const data = await response.json();
+
+        // Mapper les données du backend
+        const mappedColoc: Coloc = {
+          id: data.id.toString(),
+          name: data.title,
+          address: `${data.street}, ${data.postal_code} ${data.city}`,
+          buzzerInfo: "",
+          roommates: "",
+          logoUrl: null,
+          lat: data.latitude ? parseFloat(data.latitude) : 0,
+          lng: data.longitude ? parseFloat(data.longitude) : 0,
+          rent: data.rent_per_person ? parseFloat(data.rent_per_person) : 0,
+          area: 0,
+          rooms: data.bedrooms_count || 0,
+          ateuf: data.ambiance === "festive" || data.ambiance === "tres_festive",
+          description: data.description || "",
+          photos: [],
+        };
+
+        setColoc(mappedColoc);
+        setError(null);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Erreur inconnue");
+        console.error("Erreur:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchColoc();
   }, [colocId]);
 
-  if (!coloc) {
+  const closeLightbox = () => setLightboxIndex(null);
+
+  const showPrev = () => {
+    if (lightboxIndex === null || !coloc) return;
+    setLightboxIndex((prev) => (prev === null ? null : (prev - 1 + coloc.photos.length) % coloc.photos.length));
+  };
+
+  const showNext = () => {
+    if (lightboxIndex === null || !coloc) return;
+    setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % coloc.photos.length));
+  };
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === "ArrowRight") showNext();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [lightboxIndex]);
+
+  const handleViewOnMap = () => {
+    if (!coloc) return;
+    setSelectedColocId(coloc.id);
+    navigate("/");
+  };
+
+  const fav = coloc ? isFavorite(coloc.id) : false;
+
+  if (isLoading) {
     return (
       <div className="coloc-page">
         <div className="coloc-page-card">
-          <h1>Coloc introuvable</h1>
-          <p>Cette coloc n’existe pas (ou plus).</p>
+          <h1>Chargement...</h1>
         </div>
       </div>
     );
   }
 
-  const handleViewOnMap = () => {
-    setSelectedColocId(coloc.id); // sélectionne (marqueur actif + popup)
-    navigate("/");                // retour carte
-  };
-
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-
-const closeLightbox = () => setLightboxIndex(null);
-
-const showPrev = () => {
-  if (lightboxIndex === null) return;
-  setLightboxIndex((prev) => (prev === null ? null : (prev - 1 + coloc.photos.length) % coloc.photos.length));
-};
-
-const showNext = () => {
-  if (lightboxIndex === null) return;
-  setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % coloc.photos.length));
-};
-
-const fav = isFavorite(coloc.id);
-
-useEffect(() => {
-  if (lightboxIndex === null) return;
-
-  const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowLeft") showPrev();
-    if (e.key === "ArrowRight") showNext();
-  };
-
-  window.addEventListener("keydown", onKeyDown);
-  return () => window.removeEventListener("keydown", onKeyDown);
-}, [lightboxIndex]);
-
+  if (error || !coloc) {
+    return (
+      <div className="coloc-page">
+        <div className="coloc-page-card">
+          <h1>Coloc introuvable</h1>
+          <p>{error || "Cette coloc n'existe pas (ou plus)."}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="coloc-page">
