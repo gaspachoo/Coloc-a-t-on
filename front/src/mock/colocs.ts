@@ -25,7 +25,7 @@ export const MOCK_COLOCS: Coloc[] = [
     address: "31 Boulevard de la Libération",
     buzzerInfo: "En bas à droite de l'interphone — Sonnette : Merval",
     roommates: "Jean, Michel, Gilbert",
-    logoUrl: "../../public/vite.svg",
+    logoUrl: "/vite.svg",
     lat: 43.299745221592055, 
     lng: 5.386925472729479,
     rent: 520,
