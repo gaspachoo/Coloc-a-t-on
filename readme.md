@@ -45,8 +45,14 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
 
    ```bash
    docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+   ```
+   A exécuter la première fois pour build l'image
+
+   ```bash
    docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
    ```
+
+   A exécuter pour mettre en route le docker
 
    **En mode production** :
    A venir
