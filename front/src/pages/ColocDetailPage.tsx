@@ -46,7 +46,7 @@ const ColocDetailPage = () => {
           address: `${data.street}, ${data.postal_code} ${data.city}`,
           buzzerInfo: "",
           roommates: "",
-          logoUrl: null,
+          logoUrl: data.logo_url ? `${API_BASE}/${data.logo_url}` : null,
           lat: data.latitude ? parseFloat(data.latitude) : 0,
           lng: data.longitude ? parseFloat(data.longitude) : 0,
           rent: data.rent_per_person ? parseFloat(data.rent_per_person) : 0,

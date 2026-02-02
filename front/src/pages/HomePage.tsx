@@ -9,6 +9,7 @@ import { useAuth } from "../context/authContext";
 import { applyFilters } from "../utils/applyFilters";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE = API_URL.replace(/\/api$/, "");
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const HomePage = () => {
           address: `${flatshare.street}, ${flatshare.postal_code} ${flatshare.city}`,
           buzzerInfo: "",
           roommates: "",
-          logoUrl: null,
+          logoUrl: flatshare.logo_url ? `${API_BASE}/${flatshare.logo_url}` : null,
           lat: flatshare.latitude ? parseFloat(flatshare.latitude) : 0,
           lng: flatshare.longitude ? parseFloat(flatshare.longitude) : 0,
           rent: flatshare.rent_per_person ? parseFloat(flatshare.rent_per_person) : 0,

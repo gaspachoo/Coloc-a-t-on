@@ -31,6 +31,11 @@ const CreateColocPage = () => {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
 
+  // Logo
+  const [existingLogo, setExistingLogo] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreviewUrl, setLogoPreviewUrl] = useState<string>("");
+
   // Photos
   const [existingPhotos, setExistingPhotos] = useState<Array<{ id: number; url: string; position: number }>>([]);
   const [newPhotos, setNewPhotos] = useState<File[]>([]);
@@ -76,6 +81,11 @@ const CreateColocPage = () => {
             const photos = await photosResponse.json();
             setExistingPhotos(photos);
           }
+
+          // Charger le logo
+          if (data.logo_url) {
+            setExistingLogo(data.logo_url);
+          }
         } catch (err) {
           setError(err instanceof Error ? err.message : "Erreur inconnue");
           console.error("Erreur:", err);
@@ -104,6 +114,25 @@ const CreateColocPage = () => {
     }
   };
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setLogoFile(file);
+      
+      // Créer une URL de prévisualisation
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    setLogoPreviewUrl("");
+  };
+
   const handleRemoveNewPhoto = (index: number) => {
     setNewPhotos((prev) => prev.filter((_, i) => i !== index));
     setPhotoPreviewUrls((prev) => prev.filter((_, i) => i !== index));
@@ -126,6 +155,26 @@ const CreateColocPage = () => {
     } catch (err) {
       console.error("Erreur suppression photo:", err);
       setError("Impossible de supprimer la photo");
+    }
+  };
+
+  const handleRemoveExistingLogo = async () => {
+    if (!colocId) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/flatshares/${colocId}/logo`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression du logo");
+      }
+
+      setExistingLogo(null);
+    } catch (err) {
+      console.error("Erreur suppression logo:", err);
+      setError("Impossible de supprimer le logo");
     }
   };
 
@@ -225,6 +274,22 @@ const CreateColocPage = () => {
         }
       }
 
+      // Upload du logo
+      if (logoFile) {
+        const formData = new FormData();
+        formData.append("logo", logoFile);
+        
+        const logoResponse = await fetch(`${API_URL}/flatshares/${coloc.id}/logo`, {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        });
+
+        if (!logoResponse.ok) {
+          console.error("Erreur lors de l'upload du logo");
+        }
+      }
+
       navigate(`/coloc/${coloc.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
@@ -305,6 +370,53 @@ const CreateColocPage = () => {
               <option value="festive">Festive</option>
               <option value="studious">Studieuse</option>
             </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="logo">Logo de la colocation</label>
+            <div className="logo-upload-section">
+              <input
+                type="file"
+                id="logo"
+                accept="image/*"
+                onChange={handleLogoChange}
+                style={{ display: "none" }}
+              />
+              <label htmlFor="logo" className="logo-upload-btn">
+                <Upload className="upload-icon" />
+                Ajouter un logo
+              </label>
+              
+              <div className="logo-preview">
+                {existingLogo && !logoFile && (
+                  <div className="logo-item">
+                    <img src={existingLogo} alt="Logo de la colocation" />
+                    <button
+                      type="button"
+                      className="logo-remove-btn"
+                      onClick={handleRemoveExistingLogo}
+                      title="Supprimer"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+                
+                {logoPreviewUrl && (
+                  <div className="logo-item">
+                    <img src={logoPreviewUrl} alt="Nouveau logo" />
+                    <button
+                      type="button"
+                      className="logo-remove-btn"
+                      onClick={handleRemoveLogo}
+                      title="Supprimer"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
           <div className="form-section">
