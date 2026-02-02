@@ -25,6 +25,10 @@ router.post('/:id/photos', requireAuth, flatsharesCtrl.checkMembership, upload.s
 router.delete('/:id/photos/:photoId', requireAuth, flatsharesCtrl.checkMembership, flatsharesCtrl.deletePhoto);
 router.patch('/:id/photos/:photoId/position', requireAuth, flatsharesCtrl.checkMembership, flatsharesCtrl.updatePhotoPosition);
 
+// Logo routes
+router.post('/:id/logo', requireAuth, flatsharesCtrl.checkMembership, upload.single('logo'), flatsharesCtrl.uploadLogo);
+router.delete('/:id/logo', requireAuth, flatsharesCtrl.checkMembership, flatsharesCtrl.deleteLogo);
+
 // Application routes
 router.post('/:id/applications', requireAuth, flatsharesCtrl.createApplication);
 router.get('/:id/applications', requireAuth, flatsharesCtrl.getApplications);

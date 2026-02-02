@@ -90,6 +90,7 @@ model Flatshare {
   ambiance              Ambiance               @default(equilibree)
   status                FlatshareStatus        @default(active)
   next_available_at     DateTime?
+  logo_url              String?                @db.VarChar(500)
   created_by_user_id    Int
   created_by_user       User                   @relation(fields: [created_by_user_id], references: [id], onDelete: Restrict)
   flatshareMembers      FlatshareMember[]

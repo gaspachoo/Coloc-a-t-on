@@ -75,6 +75,45 @@ const flatsharesServices = {
     return await flatsharesRepo.updatePhotoPosition(photoId, position);
   },
 
+  async uploadLogo(flatshareId: number, imageBuffer: Buffer) {
+    // Valider que c'est bien une image
+    const isValid = await imageProcessor.validateImage(imageBuffer);
+    if (!isValid) {
+      throw new Error('Invalid image file');
+    }
+
+    // Traiter et sauvegarder l'image en WebP
+    const imagePath = await imageProcessor.processAndSave(imageBuffer, {
+      maxWidth: 500,
+      maxHeight: 500,
+      quality: 90,
+      folder: 'flatshares/logos',
+    });
+
+    // Récupérer l'ancien logo pour le supprimer
+    const flatshare = await flatsharesRepo.getFlatshareById(flatshareId);
+    if (flatshare?.logo_url) {
+      await imageProcessor.deleteImage(flatshare.logo_url);
+    }
+
+    // Sauvegarder dans la base de données
+    return await flatsharesRepo.updateLogoUrl(flatshareId, imagePath);
+  },
+
+  async deleteLogo(flatshareId: number) {
+    // Récupérer le logo pour le supprimer du système de fichiers
+    const flatshare = await flatsharesRepo.getFlatshareById(flatshareId);
+    if (!flatshare?.logo_url) {
+      throw new Error('No logo found for this flatshare');
+    }
+
+    // Supprimer le fichier physique
+    await imageProcessor.deleteImage(flatshare.logo_url);
+
+    // Supprimer de la base de données
+    return await flatsharesRepo.updateLogoUrl(flatshareId, null);
+  },
+
   async createApplication(flatshareId: number, userId: number, message?: string) {
     // Vérifier que l'utilisateur n'est pas déjà membre
     const isMember = await flatsharesRepo.checkMembership(flatshareId, userId);

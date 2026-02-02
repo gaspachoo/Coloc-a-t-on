@@ -232,6 +232,37 @@ const flatsharesCtrl = {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
             return res.status(500).json({ error: 'Fail to get user applications', details: message });
         }
+    },
+
+    uploadLogo: async (req: Request, res: Response) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded' });
+            }
+
+            const flatshare = await flatsharesService.uploadLogo(
+                flatshareId,
+                req.file.buffer
+            );
+
+            return res.status(200).json(flatshare);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to upload logo', details: message });
+        }
+    },
+
+    deleteLogo: async (req: Request, res: Response) => {
+        try {
+            const flatshareId = Number(req.params.id);
+            await flatsharesService.deleteLogo(flatshareId);
+            return res.status(204).send();
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to delete logo', details: message });
+        }
     }
 };
 

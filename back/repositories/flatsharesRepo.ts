@@ -242,6 +242,13 @@ const flatsharesRepo = {
       },
       data: { status: 'cancelled' }
     });
+  },
+
+  async updateLogoUrl(flatshareId: number, logoUrl: string | null) {
+    return prisma.flatshare.update({
+      where: { id: flatshareId },
+      data: { logo_url: logoUrl }
+    });
   }
 };
 
