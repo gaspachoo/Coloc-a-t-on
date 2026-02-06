@@ -138,6 +138,16 @@ Pour créer une nouvelle migration manuellement :
 docker exec colocaton-backend npx prisma migrate dev --name nom_de_la_migration
 ```
 
+### Accès depuis le mobile
+
+# Désactiver (en admin)
+netsh advfirewall firewall set rule name="Coloc Frontend" new enable=no
+netsh advfirewall firewall set rule name="Coloc Backend" new enable=no
+
+# Réactiver quand besoin (en admin)
+netsh advfirewall firewall set rule name="Coloc Frontend" new enable=yes
+netsh advfirewall firewall set rule name="Coloc Backend" new enable=yes
+
 ## 📝 API Endpoints
 
 ### Authentication
