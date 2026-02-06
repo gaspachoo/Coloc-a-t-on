@@ -83,7 +83,7 @@
 .login-modal-icon {
   width: 28px;
   height: 28px;
-  color: #4CAF50;
+  color: #1b2c89;
 }
 
 .login-modal-subtitle {
@@ -133,13 +133,13 @@
 
 .login-form-group input:focus {
   outline: none;
-  border-color: #4CAF50;
-  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  border-color: #1b2c89;
+  box-shadow: 0 0 0 3px rgba(27, 44, 137, 0.1);
 }
 
 .login-modal-submit {
   padding: 12px;
-  background-color: #4CAF50;
+  background-color: #1b2c89;
   color: white;
   border: none;
   border-radius: 6px;
@@ -151,8 +151,8 @@
 }
 
 .login-modal-submit:hover:not(:disabled) {
-  background-color: #45a049;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  background-color: #2a3f9e;
+  box-shadow: 0 2px 8px rgba(27, 44, 137, 0.3);
 }
 
 .login-modal-submit:disabled {
@@ -175,7 +175,7 @@
 .login-modal-toggle {
   background: none;
   border: none;
-  color: #4CAF50;
+  color: #1b2c89;
   font-weight: 600;
   cursor: pointer;
   font-size: 14px;
@@ -185,7 +185,7 @@
 }
 
 .login-modal-toggle:hover {
-  color: #45a049;
+  color: #2a3f9e;
 }
 
 @media (max-width: 768px) {
