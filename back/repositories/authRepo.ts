@@ -5,6 +5,22 @@ export default {
     return prisma.user.findUnique({ where: { email } });
   },
 
+  async findUserById(id: number) {
+    return prisma.user.findUnique({ 
+      where: { id },
+      select: {
+        id: true,
+        email: true,
+        first_name: true,
+        last_name: true,
+        class_year: true,
+        profile_photo_url: true,
+        role: true,
+        created_at: true
+      }
+    });
+  },
+
   async createUser(data: any) {
     return prisma.user.create({ data });
   },

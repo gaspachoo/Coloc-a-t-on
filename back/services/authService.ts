@@ -7,7 +7,16 @@ export default {
     const { email, password, first_name, last_name, class_year, role } = body;
     const password_hash = await hashPassword(password);
     const user = await authRepo.createUser({ email, password_hash, first_name, last_name, class_year, role });
-    return { user };
+    
+    // Générer un token d'authentification automatiquement après l'inscription
+    const rawToken = generateToken(48);
+    const token_hash = hashToken(rawToken);
+    const expires_at = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30); // 30j
+    await authRepo.createAuthToken((user as any).id, token_hash, expires_at);
+    
+    // Récupérer l'utilisateur sans le password_hash
+    const userWithoutPassword = await authRepo.findUserById((user as any).id);
+    return { token: rawToken, user: userWithoutPassword };
   },
 
   async login(body: any) {
@@ -24,7 +33,10 @@ export default {
     const token_hash = hashToken(rawToken);
     const expires_at = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30); // 30j
     await authRepo.createAuthToken((user as any).id, token_hash, expires_at);
-    return { token: rawToken, user };
+    
+    // Récupérer l'utilisateur sans le password_hash
+    const userWithoutPassword = await authRepo.findUserById((user as any).id);
+    return { token: rawToken, user: userWithoutPassword };
   },
 
   async logout(rawToken: string) {

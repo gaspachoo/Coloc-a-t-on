@@ -6,7 +6,13 @@ export default {
   signup: async (req: Request, res: Response) => {
     try {
       const result = await authService.signup(req.body);
-      return res.status(201).json(result);
+      res.cookie('auth_token', result.token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+        maxAge: 1000 * 60 * 60 * 24 * 30 // 30 days
+      });
+      return res.status(201).json({ user: result.user });
     } catch (err: any) {
       const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
       return res.status(400).json({ error: 'Fail to signup', details: message });

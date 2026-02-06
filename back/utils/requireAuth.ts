@@ -12,8 +12,11 @@ export default async function requireAuth(req: any, res: Response, next: NextFun
     if (!record) return res.status(401).json({ error: 'Unauthorized' });
     if (new Date(record.expires_at) < new Date()) return res.status(401).json({ error: 'Token expired' });
 
-    // Attach user id; expand to fetch user if needed
-    req.user = { id: record.user_id };
+    // Charger les données complètes de l'utilisateur
+    const user = await authRepo.findUserById(record.user_id);
+    if (!user) return res.status(401).json({ error: 'User not found' });
+
+    req.user = user;
     next();
   } catch (err: any) {
     return res.status(401).json({ error: 'Unauthorized' });
