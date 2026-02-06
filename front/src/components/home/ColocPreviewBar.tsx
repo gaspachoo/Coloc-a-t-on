@@ -53,9 +53,10 @@ const ColocPreviewBar = ({ coloc }: Props) => {
             e.stopPropagation();
             toggleFavorite(coloc.id);
           }}
+          title={fav ? "Retirer des favoris" : "Ajouter aux favoris"}
         >
-          {fav ? "Retirer des favoris" : "Ajouter aux favoris"}
-          {fav ?  <StarOff className="btn-icon" /> :  <Star className="btn-icon" />}
+          {fav ? <StarOff className="btn-icon" /> : <Star className="btn-icon" />}
+          <span>{fav ? "Favoris" : "Favoris"}</span>
         </button>
       </div>
 
