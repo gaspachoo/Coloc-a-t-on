@@ -45,8 +45,8 @@ const imageProcessor = {
       .webp({ quality })
       .toFile(filePath);
 
-    // Retourner le chemin relatif
-    return path.join('uploads', folder, filename).replace(/\\/g, '/');
+    // Retourner le chemin relatif (sans le préfixe 'uploads' car il est déjà dans la route statique)
+    return path.join(folder, filename).replace(/\\/g, '/');
   },
 
   /**

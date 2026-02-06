@@ -40,7 +40,7 @@ const HomePage = () => {
           address: `${flatshare.street}, ${flatshare.postal_code} ${flatshare.city}`,
           buzzerInfo: "",
           roommates: "",
-          logoUrl: flatshare.logo_url ? `${API_BASE}/${flatshare.logo_url}` : null,
+          logoUrl: flatshare.logo_url ? `${API_BASE}/uploads/${flatshare.logo_url}` : null,
           lat: flatshare.latitude ? parseFloat(flatshare.latitude) : 0,
           lng: flatshare.longitude ? parseFloat(flatshare.longitude) : 0,
           rent: flatshare.rent_per_person ? parseFloat(flatshare.rent_per_person) : 0,

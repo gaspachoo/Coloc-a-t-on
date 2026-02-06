@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { X, Upload } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_BASE = API_URL.replace(/\/api$/, "");
 
 type AddressSearchResult = {
   display_name: string;
@@ -84,7 +85,7 @@ const CreateColocPage = () => {
 
           // Charger le logo
           if (data.logo_url) {
-            setExistingLogo(data.logo_url);
+            setExistingLogo(`${API_BASE}/uploads/${data.logo_url}`);
           }
         } catch (err) {
           setError(err instanceof Error ? err.message : "Erreur inconnue");
