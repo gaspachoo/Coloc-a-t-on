@@ -1,17 +1,26 @@
 import { useEffect, useRef } from "react";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import type { Coloc } from "../../mock/colocs";
 
 type MapViewProps = {
   colocs: Coloc[];
-  onSelectColoc: (colocId: string) => void;
+  onSelectColoc: (colocId: string | null) => void;
   selectedColocId: string | null;
 };
 
 function FlyToColoc({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
   map.flyTo([lat, lng], Math.max(map.getZoom(), 15), { duration: 0.6 });
+  return null;
+}
+
+function MapClickHandler({ onMapClick }: { onMapClick: () => void }) {
+  useMapEvents({
+    click: () => {
+      onMapClick();
+    },
+  });
   return null;
 }
 
@@ -73,6 +82,9 @@ const MapView = ({ colocs, onSelectColoc, selectedColocId }: MapViewProps) => {
           attribution="&copy; OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {/* Gestionnaire de clic sur la carte pour fermer le preview */}
+        <MapClickHandler onMapClick={() => onSelectColoc(null)} />
 
         {/* Recentrage auto sur coloc sélectionnée */}
         {selectedColoc && <FlyToColoc lat={selectedColoc.lat} lng={selectedColoc.lng} />}

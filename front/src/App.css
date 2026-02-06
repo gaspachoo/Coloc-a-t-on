@@ -1528,4 +1528,186 @@ body {
   line-height: 1.5;
 }
 
+/* =========================================================
+   ADAPTATIONS MOBILE
+   ========================================================= */
+@media (max-width: 768px) {
+  /* ===== ADAPTATION SHELL ===== */
+  .app-shell {
+    flex-direction: column-reverse;
+  }
+
+  /* ===== LEFT RAIL EN BAS ===== */
+  .left-rail {
+    width: 100%;
+    height: 60px;
+    flex-direction: row;
+    padding: 8px 16px;
+    border-right: none;
+    border-top: 1px solid #ddd;
+    z-index: 3000;
+  }
+
+  .left-rail-top,
+  .left-rail-bottom {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .left-rail-top {
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .left-rail-bottom {
+    justify-content: flex-end;
+  }
+
+  .left-rail-logo-btn img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .left-rail-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* ===== BARRE DE RECHERCHE COMPACTE ===== */
+  .top-search {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+  }
+
+  .top-search-inner {
+    min-width: 0;
+    width: 100%;
+    height: 44px;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .top-search-select {
+    max-width: 90px;
+    font-size: 13px;
+  }
+
+  .top-search-input {
+    font-size: 13px;
+  }
+
+  .top-search-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ===== BOUTON FLOTTANT + RÉDUIT ===== */
+  .floating-add-btn {
+    width: 50px;
+    height: 50px;
+    bottom: 80px;
+    right: 16px;
+    font-size: 28px;
+  }
+
+  /* ===== COLOC PREVIEW SIMPLIFIÉ ===== */
+  .coloc-preview {
+    height: auto;
+    min-height: 180px;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    gap: 10px;
+    padding: 14px;
+    bottom: 80px;
+    left: 12px;
+    right: 12px;
+  }
+
+  /* Logo + Favoris en haut */
+  .cp-logo {
+    grid-column: 1;
+    grid-row: 1;
+    width: 50px;
+    height: 50px;
+  }
+
+  .cp-fav {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: flex-end;
+  }
+
+  .cp-fav-btn {
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+
+  .cp-fav-btn .btn-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Nom sur toute la largeur */
+  .cp-name {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+
+  .cp-title {
+    font-size: 17px;
+  }
+
+  /* Badges horizontaux */
+  .cp-badges {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .cp-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+  }
+
+  /* Adresse uniquement (on enlève buzzer et roommates) */
+  .cp-address {
+    grid-column: 1 / 3;
+    grid-row: 4;
+  }
+
+  .cp-buzzer,
+  .cp-roommates {
+    display: none;
+  }
+
+  /* Photo en bas */
+  .cp-photo {
+    grid-column: 1 / 3;
+    grid-row: 5;
+    justify-content: center;
+  }
+
+  .cp-photo-img,
+  .cp-photo-fallback {
+    width: 100%;
+    max-width: 280px;
+    height: 140px;
+  }
+
+  /* ===== SIDE PANEL EN PLEIN ÉCRAN SUR MOBILE ===== */
+  .side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    width: 100%;
+    z-index: 2500;
+    border-right: none;
+  }
+}
 
