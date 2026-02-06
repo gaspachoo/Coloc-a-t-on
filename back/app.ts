@@ -13,22 +13,8 @@ const port = 5000;
 
 const FRONT_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-// Autoriser plusieurs origines pour le développement local et mobile
-const allowedOrigins = [
-  FRONT_URL,
-  'http://localhost:5173',
-  'http://172.19.111.125:5173', // Accès depuis téléphone
-];
-
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    // Autoriser les requêtes sans origin (comme Postman) ou celles dans la liste
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: FRONT_URL,
   credentials: true,
   methods: ['GET', 'PATCH', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
