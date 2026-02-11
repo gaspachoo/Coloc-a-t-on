@@ -74,7 +74,10 @@ docker logs -f colocaton-postgres  # Base de données
 docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
 # Reconstruire les images
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+
+# Démarrer les services
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 # Réinitialiser complètement (⚠️ supprime les données)
 docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v

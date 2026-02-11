@@ -37,12 +37,19 @@ services:
         volumes:
         - ./back/uploads:/usr/app/uploads
         depends_on:
-            - db
+            db:
+                condition: service_healthy
+
 
     db:
         image: postgres:latest
         container_name: colocaton-postgres
         restart: unless-stopped
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U user -d colocaton"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
         environment:
             POSTGRES_USER: ${DB_USER}
             POSTGRES_PASSWORD: ${DB_PASSWORD}

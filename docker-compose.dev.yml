@@ -13,8 +13,6 @@ services:
     command: npm run dev
     environment:
       - NODE_ENV=development
-    # networks:
-    #   - colocaton-network
 
   backend:
     build:
@@ -37,5 +35,3 @@ services:
       - DB_NAME=${DB_NAME}
     depends_on:
       - db
-    # networks:
-    #   - colocaton-network
