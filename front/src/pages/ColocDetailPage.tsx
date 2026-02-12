@@ -5,7 +5,7 @@ import { useUi } from "../context/uiContext";
 import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff, Edit } from "lucide-react";
 import { useAuth } from "../context/authContext";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");
 
 const ColocDetailPage = () => {
