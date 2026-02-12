@@ -2,7 +2,7 @@ FROM node:alpine AS builder
 WORKDIR /usr/app/
 COPY package.json ./
 COPY prisma ./prisma/ 
-RUN npm install && npx prisma generate
+RUN npm install
 
 FROM node:alpine AS development
 RUN apk update && apk add --no-cache python3
@@ -12,8 +12,7 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma generate
-CMD sh -c "npx prisma db push && npx tsx app.ts"
+CMD sh -c "npx prisma generate && npx prisma db push && npx tsx app.ts"
 
 FROM node:alpine AS production
 WORKDIR /usr/app

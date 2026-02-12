@@ -1,19 +1,12 @@
 FROM node@sha256:37712740dc486f179b9540be1c6703cef3f805ea932573a007db748b71189afe AS deps
-ARG NODE_ENV=production
 WORKDIR /usr/app
 COPY package*.json ./
-RUN apk update && \
-    if [ "$NODE_ENV" = "development" ]; then \
-    npm install; \
-    else \
-    npm install --omit=dev; \
-    fi
+RUN npm install
 
 FROM node@sha256:37712740dc486f179b9540be1c6703cef3f805ea932573a007db748b71189afe AS development
 WORKDIR /usr/app
 COPY --from=deps /usr/app/node_modules ./node_modules
 COPY . .
-EXPOSE 5173
 CMD ["npm", "run", "dev"]
 
 FROM node@sha256:37712740dc486f179b9540be1c6703cef3f805ea932573a007db748b71189afe AS build
