@@ -35,6 +35,13 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
    DB_HOST=db
    DB_PORT=5432
    DB_NAME=colocaton
+
+   #Application Configuration
+   NODE_ENV=development
+   API_BACKEND_URL=http://localhost:5000/api
+   FRONTEND_URL=http://localhost:5173
+   CLIENT_PORT=5173
+   SERVER_PORT=5000
    ```
 
    > ⚠️ **Important** : Pour Docker, `DB_HOST` doit être `db` (nom du service dans docker-compose)
