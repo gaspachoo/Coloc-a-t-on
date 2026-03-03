@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import usersService from '../services/usersService';
-import { AuthenticatedRequest } from '../types/express';
+import usersService from '../services/usersService.js';
+import { AuthenticatedRequest } from '../types/express.js';
 
 const usersCtrl = {
   createUser: async (req: Request, res: Response) => {

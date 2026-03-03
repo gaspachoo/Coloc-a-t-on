@@ -4,7 +4,7 @@ import { useAuth } from "../context/authContext";
 import type { Coloc } from "../mock/colocs";
 import { User as UserIcon, Mail, Calendar, Home } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const ProfilePage = () => {
             address: `${flatshare.street}, ${flatshare.postal_code} ${flatshare.city}`,
             buzzerInfo: "",
             roommates: "",
-            logoUrl: null,
+            logoUrl: flatshare.logo_url ? `${API_URL.replace(/\/api$/, "")}/uploads/${flatshare.logo_url}` : null,
             lat: flatshare.latitude ? parseFloat(flatshare.latitude) : 0,
             lng: flatshare.longitude ? parseFloat(flatshare.longitude) : 0,
             rent: flatshare.rent_per_person ? parseFloat(flatshare.rent_per_person) : 0,

@@ -1,4 +1,4 @@
-import prisma from '../services/databaseService';
+import prisma from '../services/databaseService.js';
 
 const flatsharesRepo = {
   async create(data: any, userId: number) {

@@ -1,4 +1,4 @@
-import prisma from '../services/databaseService';
+import prisma from '../services/databaseService.js';
 
 export default {
   async findUserByEmail(email: string) {

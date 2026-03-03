@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import routes from './routes';
+import routes from './routes/index.js';
 import path from 'path';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = 5000;
 
-const FRONT_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONT_URL = process.env.FRONTEND_URL;
 
 const corsOptions = {
   origin: FRONT_URL,

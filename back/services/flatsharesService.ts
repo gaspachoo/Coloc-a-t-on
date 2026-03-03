@@ -1,5 +1,5 @@
-import flatsharesRepo from '../repositories/flatsharesRepo';
-import imageProcessor from '../utils/imageProcessor';
+import flatsharesRepo from '../repositories/flatsharesRepo.js';
+import imageProcessor from '../utils/imageProcessor.js';
 
 const flatsharesServices = {
   async createFlatshare(req: any) {

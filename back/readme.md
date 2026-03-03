@@ -19,11 +19,20 @@ To generate the Prisma client, please run:
 ```bash
 npx prisma generate
 ```
+To install the dependencies, please run:
+
+```bash
+npm install
+```
+On linux, if you have libvips installed, install dependnecies with:
+
+```bash
+SHARP_IGNORE_GLOBAL_LIBVIPS=true npm install
+```
 
 To start the server, please run:
 
 ```bash
-npm install
 npx tsx app.ts
 ```
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import authService from '../services/authService';
-import { AuthenticatedRequest } from '../types/express';
+import authService from '../services/authService.js';
+import { AuthenticatedRequest } from '../types/express.js';
 
 export default {
   signup: async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import prisma from '../services/databaseService';
+import prisma from '../services/databaseService.js';
 
 const usersRepo = {
   async create(data: any) {
