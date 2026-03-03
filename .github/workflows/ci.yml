@@ -1,5 +1,8 @@
 name: CI Docker
 
+env:
+  API_BACKEND_URL: ${{ vars.API_BACKEND_URL }}
+
 on:
   push:
     branches:
@@ -38,6 +41,8 @@ jobs:
           file: ./front/Dockerfile
           push: false
           tags: local/colocaton-front:ci
+          build-args: |
+            API_BACKEND_URL=${{ env.API_BACKEND_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -92,5 +97,7 @@ jobs:
           tags: |
             ghcr.io/${{ steps.vars.outputs.owner }}/colocaton-front:latest
             ghcr.io/${{ steps.vars.outputs.owner }}/colocaton-front:${{ github.sha }}
+          build-args: |
+            API_BACKEND_URL=${{ env.API_BACKEND_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
