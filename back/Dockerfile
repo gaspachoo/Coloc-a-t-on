@@ -30,8 +30,9 @@ COPY services ./services
 COPY repositories ./repositories
 COPY utils ./utils
 COPY types ./types
-COPY uploads ./uploads
 COPY app.ts .
+
+RUN mkdir -p /usr/app/uploads
 
 ENV PRISMA_QUERY_ENGINE_LIBRARY=/usr/app/node_modules/@prisma/client/runtime/libquery_engine-linux-musl.so.node
 
