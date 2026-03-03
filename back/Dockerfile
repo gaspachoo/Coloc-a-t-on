@@ -22,6 +22,7 @@ COPY --from=builder /usr/app/node_modules ./node_modules
 COPY --from=builder /usr/app/package.json .
 COPY --from=builder /usr/app/prisma ./prisma
 COPY --from=builder /usr/app/generated ./generated 
+COPY prisma.config.ts .
 
 COPY controllers ./controllers
 COPY routes ./routes
@@ -34,4 +35,4 @@ COPY app.ts .
 
 ENV PRISMA_QUERY_ENGINE_LIBRARY=/usr/app/node_modules/@prisma/client/runtime/libquery_engine-linux-musl.so.node
 
-CMD [ "npx", "tsx", "app.ts" ]
+CMD sh -c "if [ \"$(find prisma/migrations -mindepth 1 -maxdepth 1 -type d | wc -l)\" -gt 0 ]; then npx prisma migrate deploy; else npx prisma db push; fi && npx tsx app.ts"
