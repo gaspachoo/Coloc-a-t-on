@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import routes from './routes';
+import routes from './routes/index.js';
 import path from 'path';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';

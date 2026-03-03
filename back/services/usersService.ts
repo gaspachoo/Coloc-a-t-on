@@ -1,5 +1,5 @@
-import usersRepo from '../repositories/usersRepo';
-import imageProcessor from '../utils/imageProcessor';
+import usersRepo from '../repositories/usersRepo.js';
+import imageProcessor from '../utils/imageProcessor.js';
 
 const usersServices = {
   async createUser(data: any) {

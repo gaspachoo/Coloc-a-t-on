@@ -3,6 +3,7 @@ WORKDIR /usr/app/
 COPY package.json ./
 COPY prisma ./prisma/ 
 RUN npm install
+RUN npx prisma generate
 
 FROM node:alpine AS development
 RUN apk update && apk add --no-cache python3
@@ -26,8 +27,11 @@ COPY controllers ./controllers
 COPY routes ./routes
 COPY services ./services
 COPY repositories ./repositories
+COPY utils ./utils
+COPY types ./types
+COPY uploads ./uploads
 COPY app.ts .
 
 ENV PRISMA_QUERY_ENGINE_LIBRARY=/usr/app/node_modules/@prisma/client/runtime/libquery_engine-linux-musl.so.node
 
-CMD [ "node", "app.ts" ]
+CMD [ "npx", "tsx", "app.ts" ]

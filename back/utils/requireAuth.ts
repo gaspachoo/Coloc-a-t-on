@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import authRepo from '../repositories/authRepo';
-import { hashToken } from './authToken';
+import authRepo from '../repositories/authRepo.js';
+import { hashToken } from './authToken.js';
 
 export default async function requireAuth(req: any, res: Response, next: NextFunction) {
   try {
