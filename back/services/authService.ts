@@ -1,6 +1,6 @@
-import authRepo from '../repositories/authRepo';
-import { hashPassword, verifyPassword } from '../utils/password';
-import { generateToken, hashToken } from '../utils/authToken';
+import authRepo from '../repositories/authRepo.js';
+import { hashPassword, verifyPassword } from '../utils/password.js';
+import { generateToken, hashToken } from '../utils/authToken.js';
 
 export default {
   async signup(body: any) {

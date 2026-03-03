@@ -1,6 +1,6 @@
 import express from 'express';
-import authCtrl from '../controllers/authCtrl';
-import requireAuth from '../utils/requireAuth';
+import authCtrl from '../controllers/authCtrl.js';
+import requireAuth from '../utils/requireAuth.js';
 
 const router = express.Router();
 

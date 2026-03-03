@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import flatsharesService from '../services/flatsharesService';
-import { AuthenticatedRequest } from '../types/express';
+import flatsharesService from '../services/flatsharesService.js';
+import { AuthenticatedRequest } from '../types/express.js';
 
 const flatsharesCtrl = {
   createFlatshare: async (req: Request, res: Response) => {

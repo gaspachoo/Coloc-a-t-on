@@ -1,8 +1,8 @@
 
 import express from 'express';
-import usersCtrl from '../controllers/usersCtrl';
-import requireAuth from '../utils/requireAuth';
-import upload from '../utils/uploadMiddleware';
+import usersCtrl from '../controllers/usersCtrl.js';
+import requireAuth from '../utils/requireAuth.js';
+import upload from '../utils/uploadMiddleware.js';
 const router = express.Router();
 
 // Public routes
