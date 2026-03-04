@@ -1,5 +1,6 @@
 import SidebarFilters from "../home/SidebarFilters";
 import SidebarFavorites from "../home/SidebarFavorites";
+import "./SidePanel.css";
 
 export type PanelMode = "filters" | "favorites" | null;
 

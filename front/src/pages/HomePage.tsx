@@ -7,6 +7,7 @@ import type { Coloc } from "../mock/colocs";
 import { useUi } from "../context/uiContext";
 import { useAuth } from "../context/authContext";
 import { applyFilters } from "../utils/applyFilters";
+import "./HomePage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import colocSiteLogo from "../../assets/logo-projet-coloc.png";
 import type { User as AuthUser } from "../../context/authContext";
+import "./LeftRail.css";
 
 export type PanelMode = "filters" | "favorites" | null;
 

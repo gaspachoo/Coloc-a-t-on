@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { MOCK_COLOCS } from "../../mock/colocs";
 import { useUi } from "../../context/uiContext";
+import "./SidebarFavorites.css";
 
 type Props = {
   onClosePanel: () => void;

@@ -4,6 +4,7 @@ import type { Coloc } from "../mock/colocs";
 import { useUi } from "../context/uiContext";
 import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff, Edit } from "lucide-react";
 import { useAuth } from "../context/authContext";
+import "./ColocDetailPage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");

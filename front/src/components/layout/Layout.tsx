@@ -4,6 +4,7 @@ import LeftRail from "./LeftRail";
 import SidePanel, { type PanelMode } from "./SidePanel";
 import { useUi } from "../../context/uiContext";
 import { useAuth } from "../../context/authContext";
+import "./Layout.css";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { useUi } from "../../context/uiContext";
 import type { SearchField } from "../../types/filters";
+import "./TopSearchBar.css";
 
 const TopSearchBar = () => {
   const { filters, setFilters } = useUi();

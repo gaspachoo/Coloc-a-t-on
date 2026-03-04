@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import type { Coloc } from "../mock/colocs";
 import { User as UserIcon, Mail, Calendar, Home } from "lucide-react";
+import "./ProfilePage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
