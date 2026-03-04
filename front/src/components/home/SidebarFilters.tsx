@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useUi } from "../../context/uiContext";
 import type { Filters } from "../../types/filters";
 import { DEFAULT_FILTERS } from "../../types/filters";
+import "./SidebarFilters.css";
 
 
 const SidebarFilters = () => {

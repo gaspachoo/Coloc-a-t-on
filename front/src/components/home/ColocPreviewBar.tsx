@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import type { Coloc } from "../../mock/colocs";
 import { useUi } from "../../context/uiContext";
 import { Star, StarOff } from "lucide-react";
+import "./ColocPreviewBar.css";
 
 type Props = {
   coloc: Coloc;

@@ -1,0 +1,35 @@
+.side-panel {
+  width: clamp(260px, 24vw, 360px);
+  background: #f7f7ff;
+  border-right: 1px solid #ddd;
+  padding: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.side-panel * {
+  min-width: 0;
+}
+
+.side-panel h2 {
+  margin: 0 0 8px 0;
+}
+
+.side-panel h3 {
+  margin: 0 0 6px 0;
+}
+
+@media (max-width: 768px) {
+  .side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    width: 100%;
+    z-index: 2500;
+    border-right: none;
+  }
+}
