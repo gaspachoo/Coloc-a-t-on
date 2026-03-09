@@ -1,7 +1,7 @@
 import SidebarFilters from "../home/SidebarFilters";
 import "./SidePanel.css";
 
-export type PanelMode = "filters" | "favorites" | null;
+export type PanelMode = "filters" | null;
 
 type SidePanelProps = {
   panelMode: PanelMode;

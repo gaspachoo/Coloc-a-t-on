@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import type { Coloc } from "../types/coloc";
 import { useUi } from "../context/uiContext";
-import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff, Edit } from "lucide-react";
+import { Eye, Bell, Users, Type, Image as ImageIcon, Edit } from "lucide-react";
 import { useAuth } from "../context/authContext";
 import "./ColocDetailPage.css";
 
@@ -12,7 +12,7 @@ const API_BASE = API_URL.replace(/\/api$/, "");
 const ColocDetailPage = () => {
   const { colocId } = useParams();
   const navigate = useNavigate();
-  const { setSelectedColocId, toggleFavorite, isFavorite } = useUi();
+  const { setSelectedColocId} = useUi();
 
   const [coloc, setColoc] = useState<Coloc | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -124,8 +124,6 @@ const ColocDetailPage = () => {
     navigate("/");
   };
 
-  const fav = coloc ? isFavorite(coloc.id) : false;
-
   if (isLoading) {
     return (
       <div className="coloc-page">
@@ -168,15 +166,6 @@ const ColocDetailPage = () => {
           </div>
 
           <div className="coloc-header-right">
-            <button
-              type="button"
-              className="coloc-fav-btn"
-              onClick={() => toggleFavorite(coloc.id)}
-            >
-              {fav ? "Retirer des favoris" : "Ajouter aux favoris"}
-              {fav ?  <StarOff className="btn-icon" /> :  <Star className="btn-icon" />}
-            </button>
-
             <button
               type="button"
               className="coloc-map-btn"

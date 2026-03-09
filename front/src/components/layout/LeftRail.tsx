@@ -8,7 +8,7 @@ import colocSiteLogo from "../../assets/logo-projet-coloc.png";
 import type { User as AuthUser } from "../../context/authContext";
 import "./LeftRail.css";
 
-export type PanelMode = "filters" | "favorites" | null;
+export type PanelMode = "filters" | null;
 
 type LeftRailProps = {
   panelMode: PanelMode;

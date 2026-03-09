@@ -12,6 +12,12 @@ import "./HomePage.css";
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");
 
+const toUploadedAssetUrl = (url: string) => {
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/uploads/")) return `${API_BASE}${url}`;
+  return `${API_BASE}/uploads/${url}`;
+};
+
 const HomePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -51,8 +57,34 @@ const HomePage = () => {
           description: flatshare.description || "",
           photos: [],
         }));
+
+        const colocsWithPhotos = await Promise.all(
+          mappedColocs.map(async (mappedColoc) => {
+            try {
+              const photosResponse = await fetch(
+                `${API_URL}/flatshares/${mappedColoc.id}/photos?t=${Date.now()}`,
+                {
+                  credentials: "include",
+                  cache: "no-store",
+                },
+              );
+
+              if (!photosResponse.ok) return mappedColoc;
+
+              const photos = await photosResponse.json();
+              return {
+                ...mappedColoc,
+                photos: Array.isArray(photos)
+                  ? photos.map((p: any) => toUploadedAssetUrl(p.url))
+                  : [],
+              };
+            } catch {
+              return mappedColoc;
+            }
+          }),
+        );
         
-        setColocs(mappedColocs);
+        setColocs(colocsWithPhotos);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Erreur inconnue");
