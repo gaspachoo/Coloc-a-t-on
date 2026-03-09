@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import type { Coloc } from "../mock/colocs";
+import { AMBIANCE_LABELS, type Ambiance, type Coloc } from "../types/coloc";
 import { User as UserIcon, Mail, Calendar, Home } from "lucide-react";
 import "./ProfilePage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
+
+const toAmbiance = (value: unknown): Ambiance => {
+  if (typeof value === "string" && value in AMBIANCE_LABELS) return value as Ambiance;
+  return "equilibree";
+};
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -42,15 +47,15 @@ const ProfilePage = () => {
             id: flatshare.id.toString(),
             name: flatshare.title,
             address: `${flatshare.street}, ${flatshare.postal_code} ${flatshare.city}`,
-            buzzerInfo: "",
+            buzzerInfo: flatshare.buzzer_info || "",
             roommates: "",
             logoUrl: flatshare.logo_url ? `${API_URL.replace(/\/api$/, "")}/uploads/${flatshare.logo_url}` : null,
             lat: flatshare.latitude ? parseFloat(flatshare.latitude) : 0,
             lng: flatshare.longitude ? parseFloat(flatshare.longitude) : 0,
             rent: flatshare.rent_per_person ? parseFloat(flatshare.rent_per_person) : 0,
-            area: 0,
+            area: flatshare.area || 0,
             rooms: flatshare.bedrooms_count || 0,
-            ateuf: flatshare.ambiance === "festive" || flatshare.ambiance === "tres_festive",
+            ambiance: toAmbiance(flatshare.ambiance),
             description: flatshare.description || "",
             photos: [],
           }));
@@ -154,9 +159,7 @@ const ProfilePage = () => {
                 >
                   <div className="coloc-card-header">
                     <h3>{coloc.name}</h3>
-                    {coloc.ateuf && (
-                      <span className="coloc-badge-small">A-t'euf</span>
-                    )}
+                    <span className="coloc-badge-small">{AMBIANCE_LABELS[coloc.ambiance]}</span>
                   </div>
                   <p className="coloc-card-address">{coloc.address}</p>
                   <div className="coloc-card-stats">

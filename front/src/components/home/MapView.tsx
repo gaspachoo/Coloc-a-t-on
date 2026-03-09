@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import type { Coloc } from "../../mock/colocs";
+import type { Coloc } from "../../types/coloc";
 import "./MapView.css";
 
 type MapViewProps = {
@@ -75,7 +75,8 @@ const MapView = ({ colocs, onSelectColoc, selectedColocId }: MapViewProps) => {
     <div className="map-view">
       <MapContainer
         center={INITIAL_CENTER}
-        zoom={14.5}
+        zoom={15}
+        zoomSnap={1}
         scrollWheelZoom={true}
         style={{ height: "100%", width: "100%" }}
       >

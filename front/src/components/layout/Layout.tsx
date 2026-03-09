@@ -36,23 +36,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const handleSettings = () => {
-    if (!user) {
-      openLoginModal();
-    } else {
-      alert("Paramètres (à faire)");
-    }
-  };
-
   return (
     <div className="app-shell">
       <LeftRail
         panelMode={panelMode}
         onHomeClick={handleHomeClick}
         onToggleFilters={() => togglePanel("filters")}
-        onToggleFavorites={() => togglePanel("favorites")}
         onProfile={handleProfile}
-        onSettings={handleSettings}
         user={user}
         onLogout={logout}
       />
@@ -60,7 +50,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <SidePanel
         panelMode={panelMode}
         isOpen={isPanelOpen}
-        onClosePanel={() => setIsPanelOpen(false)}
       />
 
       <main className="app-content">{children}</main>

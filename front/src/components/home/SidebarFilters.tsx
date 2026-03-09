@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUi } from "../../context/uiContext";
+import { AMBIANCE_LABELS, AMBIANCE_VALUES } from "../../types/coloc";
 import type { Filters } from "../../types/filters";
 import { DEFAULT_FILTERS } from "../../types/filters";
 import "./SidebarFilters.css";
@@ -106,14 +107,28 @@ const SidebarFilters = () => {
 
 
       <section className="filter-block">
-        <label className="filter-checkbox">
-          <input
-            type="checkbox"
-            checked={draft.ateufOnly}
-            onChange={(e) => setDraft({ ...draft, ateufOnly: e.target.checked })}
-          />
-          <span>Coloc A-t&apos;euf</span>
-        </label>
+        <h3>Ambiance</h3>
+        <div className="filter-badges">
+          {AMBIANCE_VALUES.map((ambiance) => {
+            const isSelected = draft.ambiances.includes(ambiance);
+            return (
+              <label key={ambiance} className="filter-checkbox">
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={(e) => {
+                    const nextAmbiances = e.target.checked
+                      ? [...draft.ambiances, ambiance]
+                      : draft.ambiances.filter((a) => a !== ambiance);
+
+                    setDraft({ ...draft, ambiances: nextAmbiances });
+                  }}
+                />
+                <span>{AMBIANCE_LABELS[ambiance]}</span>
+              </label>
+            );
+          })}
+        </div>
       </section>
 
       <button
@@ -129,7 +144,7 @@ const SidebarFilters = () => {
             areaMax: DEFAULT_FILTERS.areaMax,
             rooms: DEFAULT_FILTERS.rooms,
             rooms6Plus: DEFAULT_FILTERS.rooms6Plus,
-            ateufOnly: DEFAULT_FILTERS.ateufOnly,
+            ambiances: DEFAULT_FILTERS.ambiances,
           };
 
           setDraft(resetDraft);

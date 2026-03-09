@@ -39,9 +39,16 @@
 
 .coloc-header-right {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
   gap: 10px;
   flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.coloc-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .coloc-edit-btn,
@@ -57,6 +64,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .coloc-edit-btn {
@@ -319,4 +331,100 @@
   color: white;
   font-size: 13px;
   opacity: 0.9;
+}
+
+@media (max-width: 780px) {
+  .coloc-page {
+    padding: 12px;
+    overflow: auto;
+  }
+
+  .coloc-page-card {
+    height: auto;
+    min-height: calc(100vh - 24px);
+    overflow: visible;
+    padding: 14px;
+  }
+
+  .coloc-header {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .coloc-header-left {
+    width: 100%;
+    padding-right: 96px;
+    box-sizing: border-box;
+  }
+
+  .coloc-header-right {
+    width: 100%;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .coloc-header-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+  }
+
+  .coloc-badges {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .coloc-map-btn,
+  .coloc-edit-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    margin: 0;
+    gap: 0;
+    justify-content: center;
+  }
+
+  .coloc-map-btn .btn-icon,
+  .coloc-edit-btn .btn-icon {
+    display: block;
+    margin: 0;
+    flex: 0 0 auto;
+  }
+
+  .coloc-map-btn .btn-label,
+  .coloc-edit-btn .btn-label {
+    display: none;
+  }
+
+  .coloc-subtitle {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+  }
+
+  .coloc-row-2 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    height: auto;
+  }
+
+  .coloc-section {
+    min-height: 110px;
+  }
+
+  .coloc-section-scrollbar {
+    overflow-y: visible;
+  }
+
+  .coloc-row-3 {
+    overflow: visible;
+  }
+
+  .coloc-photo {
+    flex: 0 0 min(82vw, 320px);
+    height: 190px;
+  }
 }

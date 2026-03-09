@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { Coloc } from "../mock/colocs";
+import { AMBIANCE_LABELS, type Ambiance, type Coloc } from "../types/coloc";
 import { useUi } from "../context/uiContext";
-import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff, Edit } from "lucide-react";
+import { Eye, Bell, Users, Type, Image as ImageIcon, Edit } from "lucide-react";
 import { useAuth } from "../context/authContext";
 import "./ColocDetailPage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");
 
+const toAmbiance = (value: unknown): Ambiance => {
+  if (typeof value === "string" && value in AMBIANCE_LABELS) return value as Ambiance;
+  return "equilibree";
+};
+
 const ColocDetailPage = () => {
   const { colocId } = useParams();
   const navigate = useNavigate();
-  const { setSelectedColocId, toggleFavorite, isFavorite } = useUi();
+  const { setSelectedColocId} = useUi();
 
   const [coloc, setColoc] = useState<Coloc | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,29 +50,45 @@ const ColocDetailPage = () => {
           id: data.id.toString(),
           name: data.title,
           address: `${data.street}, ${data.postal_code} ${data.city}`,
-          buzzerInfo: "",
+          buzzerInfo: data.buzzer_info || "",
           roommates: "",
           logoUrl: data.logo_url ? `${API_BASE}/uploads/${data.logo_url}` : null,
           lat: data.latitude ? parseFloat(data.latitude) : 0,
           lng: data.longitude ? parseFloat(data.longitude) : 0,
           rent: data.rent_per_person ? parseFloat(data.rent_per_person) : 0,
-          area: 0,
+          area: data.area || 0,
           rooms: data.bedrooms_count || 0,
-          ateuf: data.ambiance === "festive" || data.ambiance === "tres_festive",
+          ambiance: toAmbiance(data.ambiance),
           description: data.description || "",
           photos: [], // Sera rempli juste après
         };
 
-        // Vérifier si l'utilisateur est membre
-        if (user) {
-          const membersResponse = await fetch(`${API_URL}/flatshares/${colocId}/members`, {
-            credentials: "include",
-          });
-          if (membersResponse.ok) {
-            const members = await membersResponse.json();
+        const membersResponse = await fetch(`${API_URL}/flatshares/${colocId}/members`, {
+          credentials: "include",
+        });
+        if (membersResponse.ok) {
+          const members = await membersResponse.json();
+          if (user) {
             const isUserMember = members.some((member: any) => member.id === user.id);
             setIsMember(isUserMember);
           }
+
+          const formatMemberName = (member: any) => {
+            const firstName = typeof member.first_name === "string" ? member.first_name.trim() : "";
+            const lastName = typeof member.last_name === "string" ? member.last_name.trim() : "";
+            const fullName = `${firstName} ${lastName}`.trim();
+            if (fullName.length > 0) return fullName;
+
+            if (typeof member.name === "string" && member.name.trim().length > 0) {
+              return member.name.trim();
+            }
+
+            return "Colocataire";
+          };
+
+          mappedColoc.roommates = members
+            .map((member: any) => formatMemberName(member))
+            .join(", ");
         }
 
         // Charger les photos
@@ -124,8 +145,6 @@ const ColocDetailPage = () => {
     navigate("/");
   };
 
-  const fav = coloc ? isFavorite(coloc.id) : false;
-
   if (isLoading) {
     return (
       <div className="coloc-page">
@@ -168,40 +187,35 @@ const ColocDetailPage = () => {
           </div>
 
           <div className="coloc-header-right">
-            <button
-              type="button"
-              className="coloc-fav-btn"
-              onClick={() => toggleFavorite(coloc.id)}
-            >
-              {fav ? "Retirer des favoris" : "Ajouter aux favoris"}
-              {fav ?  <StarOff className="btn-icon" /> :  <Star className="btn-icon" />}
-            </button>
-
-            <button
-              type="button"
-              className="coloc-map-btn"
-              onClick={handleViewOnMap}
-            >
-              Voir sur la carte <Eye className="btn-icon" />
-            </button>
+            <div className="coloc-header-actions">
+              <button
+                type="button"
+                className="coloc-map-btn"
+                onClick={handleViewOnMap}
+                aria-label="Voir sur la carte"
+              >
+                <span className="btn-label">Voir sur la carte</span>
+                <Eye className="btn-icon" />
+              </button>
 
               {isMember && (
                 <button
                   type="button"
                   className="coloc-edit-btn"
                   onClick={() => navigate(`/coloc/${coloc.id}/edit`)}
+                  aria-label="Éditer"
                 >
-                  Éditer <Edit className="btn-icon" />
+                  <span className="btn-label">Éditer</span>
+                  <Edit className="btn-icon" />
                 </button>
               )}
+            </div>
 
             <div className="coloc-badges">
               <span className="coloc-badge">{coloc.rooms} chambres</span>
               <span className="coloc-badge">{coloc.area} m²</span>
               <span className="coloc-badge">{coloc.rent} €/mois</span>
-              {coloc.ateuf && (
-                <span className="coloc-badge coloc-badge-ateuf">A-t’euf</span>
-              )}
+              <span className="coloc-badge">{AMBIANCE_LABELS[coloc.ambiance]}</span>
             </div>
           </div>
         </div>

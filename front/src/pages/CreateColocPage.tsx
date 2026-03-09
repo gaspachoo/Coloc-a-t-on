@@ -1,20 +1,45 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { X, Upload } from "lucide-react";
+import { useAuth } from "../context/authContext";
+import { AMBIANCE_LABELS, type Ambiance } from "../types/coloc";
 import "./CreateColocPage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");
 
+const toUploadedAssetUrl = (url: string): string => {
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/uploads/")) return `${API_BASE}${url}`;
+  return `${API_BASE}/uploads/${url}`;
+};
+
 type AddressSearchResult = {
   display_name: string;
   lat: string;
   lon: string;
+  address?: {
+    house_number?: string;
+    road?: string;
+    pedestrian?: string;
+    city?: string;
+    town?: string;
+    village?: string;
+    municipality?: string;
+    postcode?: string;
+  };
+};
+
+type AddressDisplay = {
+  street: string;
+  city: string;
+  postalCode: string;
 };
 
 const CreateColocPage = () => {
   const { colocId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isEditMode = !!colocId;
@@ -23,8 +48,10 @@ const CreateColocPage = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [rentPerPerson, setRentPerPerson] = useState("");
+  const [area, setArea] = useState("");
   const [bedroomsCount, setBedroomsCount] = useState("");
-  const [ambiance, setAmbiance] = useState<"festive" | "studious">("festive");
+  const [buzzerInfo, setBuzzerInfo] = useState("");
+  const [ambiance, setAmbiance] = useState<Ambiance>("equilibree");
 
   // Address fields
   const [street, setStreet] = useState("");
@@ -32,6 +59,7 @@ const CreateColocPage = () => {
   const [city, setCity] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [addressSelected, setAddressSelected] = useState(false);
 
   // Logo
   const [existingLogo, setExistingLogo] = useState<string | null>(null);
@@ -47,6 +75,35 @@ const CreateColocPage = () => {
   const [addressSearch, setAddressSearch] = useState("");
   const [addressResults, setAddressResults] = useState<AddressSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  // Roommates by email
+  const [roommateQuery, setRoommateQuery] = useState("");
+  const [selectedRoommateEmails, setSelectedRoommateEmails] = useState<string[]>([]);
+  const [isCheckingRoommate, setIsCheckingRoommate] = useState(false);
+  const [roommateError, setRoommateError] = useState<string | null>(null);
+
+  const getAddressDisplay = (result: AddressSearchResult): AddressDisplay => {
+    const details = result.address;
+    const streetName = details?.road || details?.pedestrian || "";
+    const street = [details?.house_number, streetName].filter(Boolean).join(" ").trim();
+    const city = details?.city || details?.town || details?.village || details?.municipality || "";
+    const postalCode = details?.postcode || "";
+
+    if (street || city || postalCode) {
+      return {
+        street,
+        city,
+        postalCode,
+      };
+    }
+
+    const parts = result.display_name.split(",").map((p) => p.trim());
+    return {
+      street: parts[0] || "",
+      city: parts[parts.length - 3] || "",
+      postalCode: parts[parts.length - 2] || "",
+    };
+  };
 
   // Charger les données de la coloc si en mode édition
   useEffect(() => {
@@ -67,13 +124,32 @@ const CreateColocPage = () => {
           setTitle(data.title || "");
           setDescription(data.description || "");
           setRentPerPerson(data.rent_per_person?.toString() || "");
+          setArea(data.area?.toString() || "");
           setBedroomsCount(data.bedrooms_count?.toString() || "");
-          setAmbiance(data.ambiance || "festive");
+          setBuzzerInfo(data.buzzer_info || "");
+          setAmbiance((typeof data.ambiance === "string" && data.ambiance in AMBIANCE_LABELS
+            ? data.ambiance
+            : "equilibree") as Ambiance);
           setStreet(data.street || "");
           setPostalCode(data.postal_code || "");
           setCity(data.city || "");
           setLatitude(data.latitude || "");
           setLongitude(data.longitude || "");
+          setAddressSelected(Boolean(data.street && data.postal_code && data.city && data.latitude && data.longitude));
+
+          const membersResponse = await fetch(`${API_URL}/flatshares/${colocId}/members`, {
+            credentials: "include",
+          });
+          if (membersResponse.ok) {
+            const members = await membersResponse.json();
+            const memberEmails = Array.isArray(members)
+              ? members
+                  .map((m: { email?: string }) => m.email)
+                  .filter((email: string | undefined): email is string => Boolean(email))
+                  .filter((email: string) => email !== user?.email)
+              : [];
+            setSelectedRoommateEmails(memberEmails);
+          }
 
           // Charger les photos
           const photosResponse = await fetch(`${API_URL}/flatshares/${colocId}/photos`, {
@@ -81,12 +157,18 @@ const CreateColocPage = () => {
           });
           if (photosResponse.ok) {
             const photos = await photosResponse.json();
-            setExistingPhotos(photos);
+            const mappedPhotos = Array.isArray(photos)
+              ? photos.map((photo: { id: number; url: string; position: number }) => ({
+                  ...photo,
+                  url: toUploadedAssetUrl(photo.url),
+                }))
+              : [];
+            setExistingPhotos(mappedPhotos);
           }
 
           // Charger le logo
           if (data.logo_url) {
-            setExistingLogo(`${API_BASE}/uploads/${data.logo_url}`);
+            setExistingLogo(toUploadedAssetUrl(data.logo_url));
           }
         } catch (err) {
           setError(err instanceof Error ? err.message : "Erreur inconnue");
@@ -98,7 +180,49 @@ const CreateColocPage = () => {
 
       fetchColoc();
     }
-  }, [colocId, isEditMode]);
+  }, [colocId, isEditMode, user?.email]);
+
+  const handleAddRoommateEmail = async (email: string) => {
+    const normalized = email.trim().toLowerCase();
+    setRoommateError(null);
+
+    if (!normalized || selectedRoommateEmails.includes(normalized) || normalized === user?.email) {
+      return;
+    }
+
+    try {
+      setIsCheckingRoommate(true);
+
+      const response = await fetch(`${API_URL}/users/check-roommate-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email: normalized }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({ error: "Adresse email introuvable" }));
+        if (response.status === 429) {
+          throw new Error("Trop de tentatives. Réessayez dans une minute.");
+        }
+        throw new Error(data.error || "Adresse email introuvable");
+      }
+
+      const data = (await response.json()) as { email: string };
+      setSelectedRoommateEmails((prev) => [...prev, data.email]);
+      setRoommateQuery("");
+    } catch (err) {
+      setRoommateError(err instanceof Error ? err.message : "Impossible de verifier cet email");
+    } finally {
+      setIsCheckingRoommate(false);
+    }
+  };
+
+  const handleRemoveRoommateEmail = (email: string) => {
+    setSelectedRoommateEmails((prev) => prev.filter((item) => item !== email));
+  };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -180,6 +304,36 @@ const CreateColocPage = () => {
     }
   };
 
+  const handleDeleteFlatshare = async () => {
+    if (!colocId) return;
+
+    const isConfirmed = window.confirm(
+      "Voulez-vous vraiment supprimer cette colocation ? Cette action est irreversible."
+    );
+    if (!isConfirmed) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch(`${API_URL}/flatshares/${colocId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression de la colocation");
+      }
+
+      navigate("/");
+    } catch (err) {
+      console.error("Erreur suppression colocation:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleAddressSearch = async () => {
     if (!addressSearch.trim()) return;
 
@@ -188,7 +342,7 @@ const CreateColocPage = () => {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           addressSearch
-        )}&limit=5`,
+        )}&addressdetails=1&limit=5`,
         {
           headers: {
             "User-Agent": "Colocaton App",
@@ -211,16 +365,14 @@ const CreateColocPage = () => {
   };
 
   const handleSelectAddress = (result: AddressSearchResult) => {
+    const parsed = getAddressDisplay(result);
+
     setLatitude(result.lat);
     setLongitude(result.lon);
-
-    // Parse the display_name to extract address components
-    const parts = result.display_name.split(",").map((p) => p.trim());
-    if (parts.length >= 3) {
-      setStreet(parts[0]);
-      setCity(parts[parts.length - 3] || "");
-      setPostalCode(parts[parts.length - 2] || "");
-    }
+    setStreet(parsed.street);
+    setCity(parsed.city);
+    setPostalCode(parsed.postalCode);
+    setAddressSelected(true);
 
     setAddressResults([]);
     setAddressSearch("");
@@ -232,6 +384,10 @@ const CreateColocPage = () => {
     setError(null);
 
     try {
+      if (!addressSelected) {
+        throw new Error("Veuillez sélectionner une adresse dans les résultats proposés.");
+      }
+
       const url = isEditMode ? `${API_URL}/flatshares/${colocId}` : `${API_URL}/flatshares`;
       const method = isEditMode ? "PATCH" : "POST";
       
@@ -245,13 +401,16 @@ const CreateColocPage = () => {
           title,
           description,
           rent_per_person: Number(rentPerPerson),
+          area: Number(area),
           bedrooms_count: Number(bedroomsCount),
+          buzzer_info: buzzerInfo,
           street,
           postal_code: postalCode,
           city,
           latitude,
           longitude,
           ambiance,
+          roommate_emails: selectedRoommateEmails,
         }),
       });
 
@@ -348,6 +507,19 @@ const CreateColocPage = () => {
             </div>
 
             <div className="form-group">
+              <label htmlFor="area">Surface (m²) *</label>
+              <input
+                type="number"
+                id="area"
+                value={area}
+                onChange={(e) => setArea(e.target.value)}
+                required
+                min="1"
+                placeholder="120"
+              />
+            </div>
+
+            <div className="form-group">
               <label htmlFor="bedroomsCount">Nombre de chambres *</label>
               <input
                 type="number"
@@ -362,15 +534,82 @@ const CreateColocPage = () => {
           </div>
 
           <div className="form-group">
+            <label htmlFor="buzzerInfo">Sonnette *</label>
+            <input
+              type="text"
+              id="buzzerInfo"
+              value={buzzerInfo}
+              onChange={(e) => setBuzzerInfo(e.target.value)}
+              required
+              placeholder="Nom affiché sur la sonnette"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="roommateEmail">Colocataires (emails)</label>
+            <div className="roommates-input-wrapper">
+              <input
+                type="email"
+                id="roommateEmail"
+                value={roommateQuery}
+                onChange={(e) => {
+                  setRoommateQuery(e.target.value);
+                  if (roommateError) setRoommateError(null);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (roommateQuery.trim()) {
+                      void handleAddRoommateEmail(roommateQuery);
+                    }
+                  }
+                }}
+                placeholder="Rechercher un email..."
+              />
+              <button
+                type="button"
+                className="search-btn"
+                onClick={() => void handleAddRoommateEmail(roommateQuery)}
+                disabled={!roommateQuery.trim() || isCheckingRoommate}
+              >
+                {isCheckingRoommate ? "Verification..." : "Ajouter"}
+              </button>
+            </div>
+
+            {roommateError && <p className="address-helper-text">{roommateError}</p>}
+
+            {selectedRoommateEmails.length > 0 && (
+              <div className="selected-roommates">
+                {selectedRoommateEmails.map((email) => (
+                  <div key={email} className="roommate-chip">
+                    <span>{email}</span>
+                    <button
+                      type="button"
+                      className="roommate-chip-remove"
+                      onClick={() => handleRemoveRoommateEmail(email)}
+                      title="Retirer"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="form-group">
             <label htmlFor="ambiance">Ambiance *</label>
             <select
               id="ambiance"
               value={ambiance}
-              onChange={(e) => setAmbiance(e.target.value as "festive" | "studious")}
+              onChange={(e) => setAmbiance(e.target.value as Ambiance)}
               required
             >
-              <option value="festive">Festive</option>
-              <option value="studious">Studieuse</option>
+              <option value="calme">{AMBIANCE_LABELS.calme}</option>
+              <option value="studieuse">{AMBIANCE_LABELS.studieuse}</option>
+              <option value="equilibree">{AMBIANCE_LABELS.equilibree}</option>
+              <option value="festive">{AMBIANCE_LABELS.festive}</option>
+              <option value="tres_festive">{AMBIANCE_LABELS.tres_festive}</option>
             </select>
           </div>
 
@@ -431,9 +670,12 @@ const CreateColocPage = () => {
                   type="text"
                   id="addressSearch"
                   value={addressSearch}
-                  onChange={(e) => setAddressSearch(e.target.value)}
-                  placeholder="Tapez une adresse..."
-                  onKeyPress={(e) => {
+                  onChange={(e) => {
+                    setAddressSearch(e.target.value);
+                    setAddressSelected(false);
+                  }}
+                  placeholder="Tapez une adresse puis sélectionnez un résultat..."
+                  onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       e.preventDefault();
                       handleAddressSearch();
@@ -450,16 +692,27 @@ const CreateColocPage = () => {
                 </button>
               </div>
 
+              <p className="address-helper-text">
+                L&apos;adresse doit être sélectionnée dans les résultats pour récupérer automatiquement la latitude et la longitude.
+              </p>
+
               {addressResults.length > 0 && (
                 <div className="address-results">
                   {addressResults.map((result, index) => (
-                    <div
+                    <button
                       key={index}
+                      type="button"
                       className="address-result"
                       onClick={() => handleSelectAddress(result)}
                     >
-                      {result.display_name}
-                    </div>
+                      <span className="address-result-main">{getAddressDisplay(result).street || "Adresse"}</span>
+                      <span className="address-result-meta">
+                        <strong>{getAddressDisplay(result).postalCode || "Code postal inconnu"}</strong>
+                        {" "}
+                        {getAddressDisplay(result).city || "Ville inconnue"}
+                      </span>
+                      <span className="address-result-full">{result.display_name}</span>
+                    </button>
                   ))}
                 </div>
               )}
@@ -472,9 +725,9 @@ const CreateColocPage = () => {
                   type="text"
                   id="street"
                   value={street}
-                  onChange={(e) => setStreet(e.target.value)}
+                  readOnly
                   required
-                  placeholder="Boulevard Françoise Duparc"
+                  placeholder="Sélectionnez une adresse ci-dessus"
                 />
               </div>
             </div>
@@ -486,9 +739,9 @@ const CreateColocPage = () => {
                   type="text"
                   id="postalCode"
                   value={postalCode}
-                  onChange={(e) => setPostalCode(e.target.value)}
+                  readOnly
                   required
-                  placeholder="13004"
+                  placeholder="Sélectionnez une adresse ci-dessus"
                 />
               </div>
 
@@ -498,9 +751,9 @@ const CreateColocPage = () => {
                   type="text"
                   id="city"
                   value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  readOnly
                   required
-                  placeholder="Marseille"
+                  placeholder="Sélectionnez une adresse ci-dessus"
                 />
               </div>
             </div>
@@ -512,9 +765,9 @@ const CreateColocPage = () => {
                   type="text"
                   id="latitude"
                   value={latitude}
-                  onChange={(e) => setLatitude(e.target.value)}
+                  readOnly
                   required
-                  placeholder="43.29973"
+                  placeholder="Latitude automatique"
                 />
               </div>
 
@@ -524,9 +777,9 @@ const CreateColocPage = () => {
                   type="text"
                   id="longitude"
                   value={longitude}
-                  onChange={(e) => setLongitude(e.target.value)}
+                  readOnly
                   required
-                  placeholder="5.38689"
+                  placeholder="Longitude automatique"
                 />
               </div>
             </div>
@@ -583,6 +836,16 @@ const CreateColocPage = () => {
           </div>
 
           <div className="form-actions">
+            {isEditMode && (
+              <button
+                type="button"
+                onClick={handleDeleteFlatshare}
+                className="btn-delete"
+                disabled={isLoading}
+              >
+                Supprimer la colocation
+              </button>
+            )}
             <button
               type="button"
               onClick={() => navigate("/")}

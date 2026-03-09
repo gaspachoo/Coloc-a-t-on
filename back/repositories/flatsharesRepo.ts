@@ -5,7 +5,9 @@ const flatsharesRepo = {
     const { title, 
             description, 
             rent_per_person, 
+            area,
             bedrooms_count, 
+            buzzer_info,
             street, 
             postal_code, 
             city, 
@@ -13,15 +15,38 @@ const flatsharesRepo = {
             longitude, 
             ambiance, 
             status, 
-            next_available_at
+            next_available_at,
+            roommate_emails
       } = data;
+
+    const normalizedEmails = Array.isArray(roommate_emails)
+      ? [...new Set(roommate_emails.map((email: string) => email.trim().toLowerCase()).filter(Boolean))]
+      : [];
+
+    const invitedUsers = normalizedEmails.length > 0
+      ? await prisma.user.findMany({
+          where: { email: { in: normalizedEmails } },
+          select: { id: true, email: true }
+        })
+      : [];
+
+    const foundEmails = new Set(invitedUsers.map((user) => user.email.toLowerCase()));
+    const missingEmails = normalizedEmails.filter((email: string) => !foundEmails.has(email));
+
+    if (missingEmails.length > 0) {
+      throw new Error(`Utilisateurs introuvables: ${missingEmails.join(', ')}`);
+    }
+
+    const memberIds = [...new Set([userId, ...invitedUsers.map((user) => user.id)])];
       
     return prisma.flatshare.create({
       data: {
         title, 
         description, 
         rent_per_person, 
+        area,
         bedrooms_count, 
+        buzzer_info,
         street, 
         postal_code, 
         city, 
@@ -32,11 +57,11 @@ const flatsharesRepo = {
         next_available_at, 
         created_by_user_id: userId,
         flatshareMembers: {
-          create: {
-            user_id: userId,
+          create: memberIds.map((memberId) => ({
+            user_id: memberId,
             status: 'active',
             joined_at: new Date()
-          }
+          }))
         }
       },
       include: {
@@ -53,8 +78,68 @@ const flatsharesRepo = {
     return prisma.flatshare.findUnique({ where: { id } });
   },
 
-  async update(id: number, data: any) {
-    return prisma.flatshare.update({ where: { id }, data });
+  async update(id: number, data: any, currentUserId?: number) {
+    const { roommate_emails, ...flatshareData } = data;
+
+    const updatedFlatshare = await prisma.flatshare.update({
+      where: { id },
+      data: flatshareData,
+    });
+
+    if (!Array.isArray(roommate_emails)) {
+      return updatedFlatshare;
+    }
+
+    const normalizedEmails = [...new Set(roommate_emails.map((email: string) => email.trim().toLowerCase()).filter(Boolean))];
+    const invitedUsers = normalizedEmails.length > 0
+      ? await prisma.user.findMany({
+          where: { email: { in: normalizedEmails } },
+          select: { id: true, email: true },
+        })
+      : [];
+
+    const foundEmails = new Set(invitedUsers.map((user) => user.email.toLowerCase()));
+    const missingEmails = normalizedEmails.filter((email: string) => !foundEmails.has(email));
+
+    if (missingEmails.length > 0) {
+      throw new Error(`Utilisateurs introuvables: ${missingEmails.join(', ')}`);
+    }
+
+    const membersToKeep = [...new Set([...(currentUserId ? [currentUserId] : []), ...invitedUsers.map((user) => user.id)])];
+
+    await prisma.$transaction(async (tx) => {
+      await tx.flatshareMember.deleteMany({
+        where: {
+          flatshare_id: id,
+          ...(membersToKeep.length > 0 ? { user_id: { notIn: membersToKeep } } : {}),
+        },
+      });
+
+      for (const memberId of membersToKeep) {
+        await tx.flatshareMember.upsert({
+          where: {
+            flatshare_id_user_id: {
+              flatshare_id: id,
+              user_id: memberId,
+            },
+          },
+          update: {
+            status: 'active',
+            joined_at: new Date(),
+            left_at: null,
+            departure_planned_at: null,
+          },
+          create: {
+            flatshare_id: id,
+            user_id: memberId,
+            status: 'active',
+            joined_at: new Date(),
+          },
+        });
+      }
+    });
+
+    return updatedFlatshare;
   },
 
   async delete(id: number) {

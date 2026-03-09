@@ -34,9 +34,9 @@ const flatsharesCtrl = {
         }
     },
 
-    updateFlatshare: async (req: Request, res: Response) => {
+    updateFlatshare: async (req: AuthenticatedRequest, res: Response) => {
         try{
-            const flatshare = await flatsharesService.updateFlatshare(Number(req.params.id), req.body);
+            const flatshare = await flatsharesService.updateFlatshare(Number(req.params.id), req.body, req.user?.id);
             return res.status(200).json(flatshare);
         } catch(err: any) {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';

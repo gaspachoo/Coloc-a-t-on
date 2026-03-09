@@ -80,7 +80,9 @@ model Flatshare {
   title                 String                 @db.VarChar(255)
   description           String?                @db.Text
   rent_per_person       Decimal                @db.Decimal(8, 2)
+  area                  Int                    @default(0) @db.SmallInt
   bedrooms_count        Int                    @db.SmallInt
+  buzzer_info           String                 @default("") @db.VarChar(255)
   created_at            DateTime               @default(now())
   street                String                 @db.VarChar(255)
   postal_code           String                 @db.VarChar(10)

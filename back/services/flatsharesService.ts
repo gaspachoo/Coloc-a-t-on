@@ -18,8 +18,8 @@ const flatsharesServices = {
     return await flatsharesRepo.getFlatshareById(id);
   },
 
-  async updateFlatshare(id: number, data: any) {
-    return await flatsharesRepo.update(id, data);
+  async updateFlatshare(id: number, data: any, currentUserId?: number) {
+    return await flatsharesRepo.update(id, data, currentUserId);
   },
 
   async deleteFlatshare(id: number) {
