@@ -115,13 +115,21 @@
   max-height: 200px;
   overflow-y: auto;
   margin-top: 4px;
+  background: #fff;
 }
 
 .address-result {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
   padding: 12px;
   cursor: pointer;
   border-bottom: 1px solid #e2e8f0;
   transition: background 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .address-result:last-child {
@@ -129,7 +137,96 @@
 }
 
 .address-result:hover {
+  background: #ebf4ff;
+}
+
+.address-result-main {
+  font-weight: 600;
+  color: #1a365d;
+}
+
+.address-result-meta {
+  color: #2d3748;
+  font-size: 13px;
+}
+
+.address-result-full {
+  color: #718096;
+  font-size: 12px;
+}
+
+.address-helper-text {
+  margin: 6px 0 0;
+  color: #4a5568;
+  font-size: 13px;
+}
+
+.roommates-input-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.roommates-input-wrapper input {
+  flex: 1;
+}
+
+.email-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.email-suggestion {
+  border: 1px solid #cbd5e0;
+  border-radius: 999px;
   background: #f7fafc;
+  color: #2d3748;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.email-suggestion:hover {
+  background: #edf2f7;
+}
+
+.selected-roommates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.roommate-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: #e6fffa;
+  color: #234e52;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.roommate-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #2c7a7b;
+  cursor: pointer;
+  padding: 0;
+}
+
+.roommate-chip-remove:hover {
+  color: #1d4044;
+}
+
+.form-group input[readonly] {
+  background: #edf2f7;
+  color: #2d3748;
 }
 
 .form-actions {

@@ -45,29 +45,32 @@ const ColocDetailPage = () => {
           id: data.id.toString(),
           name: data.title,
           address: `${data.street}, ${data.postal_code} ${data.city}`,
-          buzzerInfo: "",
+          buzzerInfo: data.buzzer_info || "",
           roommates: "",
           logoUrl: data.logo_url ? `${API_BASE}/uploads/${data.logo_url}` : null,
           lat: data.latitude ? parseFloat(data.latitude) : 0,
           lng: data.longitude ? parseFloat(data.longitude) : 0,
           rent: data.rent_per_person ? parseFloat(data.rent_per_person) : 0,
-          area: 0,
+          area: data.area || 0,
           rooms: data.bedrooms_count || 0,
           ateuf: data.ambiance === "festive" || data.ambiance === "tres_festive",
           description: data.description || "",
           photos: [], // Sera rempli juste après
         };
 
-        // Vérifier si l'utilisateur est membre
-        if (user) {
-          const membersResponse = await fetch(`${API_URL}/flatshares/${colocId}/members`, {
-            credentials: "include",
-          });
-          if (membersResponse.ok) {
-            const members = await membersResponse.json();
+        const membersResponse = await fetch(`${API_URL}/flatshares/${colocId}/members`, {
+          credentials: "include",
+        });
+        if (membersResponse.ok) {
+          const members = await membersResponse.json();
+          if (user) {
             const isUserMember = members.some((member: any) => member.id === user.id);
             setIsMember(isUserMember);
           }
+          mappedColoc.roommates = members
+            .map((member: any) => member.email)
+            .filter((email: unknown) => typeof email === "string" && email.length > 0)
+            .join(", ");
         }
 
         // Charger les photos

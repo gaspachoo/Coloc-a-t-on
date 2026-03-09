@@ -70,7 +70,6 @@ const HomePage = () => {
           id: String(flatshare.id ?? ""),
           name: asString(flatshare.title),
           address: `${asString(flatshare.street)}, ${asString(flatshare.postal_code)} ${asString(flatshare.city)}`,
-          buzzerInfo: "",
           roommates: "",
           logoUrl: asNullableString(flatshare.logo_url)
             ? toUploadedAssetUrl(asString(flatshare.logo_url))
@@ -78,8 +77,9 @@ const HomePage = () => {
           lat: toNumber(asNumberOrStringOrNull(flatshare.latitude)),
           lng: toNumber(asNumberOrStringOrNull(flatshare.longitude)),
           rent: toNumber(asNumberOrStringOrNull(flatshare.rent_per_person)),
-          area: 0,
+          area: toNumber(asNumberOrStringOrNull(flatshare.area)),
           rooms: asNumberOrNull(flatshare.bedrooms_count) ?? 0,
+          buzzerInfo: asString(flatshare.buzzer_info),
           ateuf: asString(flatshare.ambiance) === "festive" || asString(flatshare.ambiance) === "tres_festive",
           description: asString(flatshare.description),
           photos: [],
