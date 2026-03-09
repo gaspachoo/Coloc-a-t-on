@@ -369,11 +369,8 @@ const CreateColocPage = () => {
               onChange={(e) => setAmbiance(e.target.value as "studieuse" | "festive" )}
               required
             >
-              <option value="calme">Calme</option>
               <option value="studieuse">Studieuse</option>
-              <option value="equilibree">Équilibrée</option>
               <option value="festive">Festive</option>
-              <option value="tres_festive">Très festive</option>
             </select>
           </div>
 
