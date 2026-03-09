@@ -24,7 +24,7 @@ const CreateColocPage = () => {
   const [description, setDescription] = useState("");
   const [rentPerPerson, setRentPerPerson] = useState("");
   const [bedroomsCount, setBedroomsCount] = useState("");
-  const [ambiance, setAmbiance] = useState<"festive" | "studious">("festive");
+  const [ambiance, setAmbiance] = useState<"studieuse" | "festive">("festive");
 
   // Address fields
   const [street, setStreet] = useState("");
@@ -366,11 +366,14 @@ const CreateColocPage = () => {
             <select
               id="ambiance"
               value={ambiance}
-              onChange={(e) => setAmbiance(e.target.value as "festive" | "studious")}
+              onChange={(e) => setAmbiance(e.target.value as "calme" | "studieuse" | "equilibree" | "festive" | "tres_festive")}
               required
             >
+              <option value="calme">Calme</option>
+              <option value="studieuse">Studieuse</option>
+              <option value="equilibree">Équilibrée</option>
               <option value="festive">Festive</option>
-              <option value="studious">Studieuse</option>
+              <option value="tres_festive">Très festive</option>
             </select>
           </div>
 

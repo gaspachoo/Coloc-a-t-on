@@ -4,11 +4,24 @@ services:
       target: development
     ports:
       - 5173:5173
+    volumes:
+      - ./front/src:/usr/app/src
+      - ./front/public:/usr/app/public
+      - ./front/index.html:/usr/app/index.html
   backend:
     build:
       target: development
     ports:
       - 5000:5000
+    volumes:
+      - ./back/controllers:/usr/app/controllers
+      - ./back/services:/usr/app/services
+      - ./back/repositories:/usr/app/repositories
+      - ./back/routes:/usr/app/routes
+      - ./back/utils:/usr/app/utils
+      - ./back/types:/usr/app/types
+      - ./back/prisma:/usr/app/prisma
+      - ./back/app.ts:/usr/app/app.ts
   db:
     ports: 
       - ${DB_PORT}:5432
