@@ -53,6 +53,7 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
    ```bash
    docker compose -f docker-compose.yml -f docker-compose.dev.yml build
    ```
+
    A exécuter la première fois pour build l'image
 
    ```bash
@@ -65,8 +66,8 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
    A venir
 
 4. **Accéder à l'application**
-   - Frontend : http://localhost:5173
-   - Backend API : http://localhost:5000
+   - Frontend : <http://localhost:5173>
+   - Backend API : <http://localhost:5000>
    - PostgreSQL : localhost:5432
 
 ### Commandes utiles

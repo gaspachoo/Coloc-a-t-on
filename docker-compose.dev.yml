@@ -2,9 +2,13 @@ services:
   frontend:
     build:
       target: development
+    ports:
+      - 5173:5173
   backend:
     build:
       target: development
+    ports:
+      - 5000:5000
   db:
     ports: 
       - ${DB_PORT}:5432
