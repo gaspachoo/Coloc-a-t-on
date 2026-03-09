@@ -169,23 +169,29 @@ const ColocDetailPage = () => {
           </div>
 
           <div className="coloc-header-right">
-            <button
-              type="button"
-              className="coloc-map-btn"
-              onClick={handleViewOnMap}
-            >
-              Voir sur la carte <Eye className="btn-icon" />
-            </button>
+            <div className="coloc-header-actions">
+              <button
+                type="button"
+                className="coloc-map-btn"
+                onClick={handleViewOnMap}
+                aria-label="Voir sur la carte"
+              >
+                <span className="btn-label">Voir sur la carte</span>
+                <Eye className="btn-icon" />
+              </button>
 
               {isMember && (
                 <button
                   type="button"
                   className="coloc-edit-btn"
                   onClick={() => navigate(`/coloc/${coloc.id}/edit`)}
+                  aria-label="Éditer"
                 >
-                  Éditer <Edit className="btn-icon" />
+                  <span className="btn-label">Éditer</span>
+                  <Edit className="btn-icon" />
                 </button>
               )}
+            </div>
 
             <div className="coloc-badges">
               <span className="coloc-badge">{coloc.rooms} chambres</span>
