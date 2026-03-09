@@ -2,8 +2,6 @@ services:
   frontend:
     build:
       target: development
-    ports:
-      - 5173:5173
     volumes:
       - ./front/src:/usr/app/src
       - ./front/public:/usr/app/public
@@ -11,8 +9,6 @@ services:
   backend:
     build:
       target: development
-    ports:
-      - 5000:5000
     volumes:
       - ./back/controllers:/usr/app/controllers
       - ./back/services:/usr/app/services
