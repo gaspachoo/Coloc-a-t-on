@@ -35,10 +35,6 @@ type AddressDisplay = {
   postalCode: string;
 };
 
-type UserSearchResult = {
-  email: string;
-};
-
 const CreateColocPage = () => {
   const { colocId } = useParams();
   const navigate = useNavigate();
@@ -80,15 +76,10 @@ const CreateColocPage = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   // Roommates by email
-  const [allUserEmails, setAllUserEmails] = useState<string[]>([]);
   const [roommateQuery, setRoommateQuery] = useState("");
   const [selectedRoommateEmails, setSelectedRoommateEmails] = useState<string[]>([]);
-
-  const filteredEmailSuggestions = allUserEmails
-    .filter((email) => email !== user?.email)
-    .filter((email) => !selectedRoommateEmails.includes(email))
-    .filter((email) => email.toLowerCase().includes(roommateQuery.trim().toLowerCase()))
-    .slice(0, 6);
+  const [isCheckingRoommate, setIsCheckingRoommate] = useState(false);
+  const [roommateError, setRoommateError] = useState<string | null>(null);
 
   const getAddressDisplay = (result: AddressSearchResult): AddressDisplay => {
     const details = result.address;
@@ -112,27 +103,6 @@ const CreateColocPage = () => {
       postalCode: parts[parts.length - 2] || "",
     };
   };
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`${API_URL}/users`, { credentials: "include" });
-        if (!response.ok) {
-          return;
-        }
-
-        const users = (await response.json()) as UserSearchResult[];
-        const emails = users
-          .map((u) => u.email)
-          .filter((email): email is string => typeof email === "string" && email.length > 0);
-        setAllUserEmails([...new Set(emails)]);
-      } catch (err) {
-        console.error("Erreur récupération utilisateurs:", err);
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   // Charger les données de la coloc si en mode édition
   useEffect(() => {
@@ -209,13 +179,42 @@ const CreateColocPage = () => {
     }
   }, [colocId, isEditMode, user?.email]);
 
-  const handleAddRoommateEmail = (email: string) => {
+  const handleAddRoommateEmail = async (email: string) => {
     const normalized = email.trim().toLowerCase();
+    setRoommateError(null);
+
     if (!normalized || selectedRoommateEmails.includes(normalized) || normalized === user?.email) {
       return;
     }
-    setSelectedRoommateEmails((prev) => [...prev, normalized]);
-    setRoommateQuery("");
+
+    try {
+      setIsCheckingRoommate(true);
+
+      const response = await fetch(`${API_URL}/users/check-roommate-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email: normalized }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({ error: "Adresse email introuvable" }));
+        if (response.status === 429) {
+          throw new Error("Trop de tentatives. Réessayez dans une minute.");
+        }
+        throw new Error(data.error || "Adresse email introuvable");
+      }
+
+      const data = (await response.json()) as { email: string };
+      setSelectedRoommateEmails((prev) => [...prev, data.email]);
+      setRoommateQuery("");
+    } catch (err) {
+      setRoommateError(err instanceof Error ? err.message : "Impossible de verifier cet email");
+    } finally {
+      setIsCheckingRoommate(false);
+    }
   };
 
   const handleRemoveRoommateEmail = (email: string) => {
@@ -550,12 +549,15 @@ const CreateColocPage = () => {
                 type="email"
                 id="roommateEmail"
                 value={roommateQuery}
-                onChange={(e) => setRoommateQuery(e.target.value)}
+                onChange={(e) => {
+                  setRoommateQuery(e.target.value);
+                  if (roommateError) setRoommateError(null);
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     if (roommateQuery.trim()) {
-                      handleAddRoommateEmail(roommateQuery);
+                      void handleAddRoommateEmail(roommateQuery);
                     }
                   }
                 }}
@@ -564,27 +566,14 @@ const CreateColocPage = () => {
               <button
                 type="button"
                 className="search-btn"
-                onClick={() => handleAddRoommateEmail(roommateQuery)}
-                disabled={!roommateQuery.trim()}
+                onClick={() => void handleAddRoommateEmail(roommateQuery)}
+                disabled={!roommateQuery.trim() || isCheckingRoommate}
               >
-                Ajouter
+                {isCheckingRoommate ? "Verification..." : "Ajouter"}
               </button>
             </div>
 
-            {filteredEmailSuggestions.length > 0 && roommateQuery.trim().length > 0 && (
-              <div className="email-suggestions">
-                {filteredEmailSuggestions.map((email) => (
-                  <button
-                    key={email}
-                    type="button"
-                    className="email-suggestion"
-                    onClick={() => handleAddRoommateEmail(email)}
-                  >
-                    {email}
-                  </button>
-                ))}
-              </div>
-            )}
+            {roommateError && <p className="address-helper-text">{roommateError}</p>}
 
             {selectedRoommateEmails.length > 0 && (
               <div className="selected-roommates">
