@@ -7,6 +7,12 @@ import "./CreateColocPage.css";
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");
 
+const toUploadedAssetUrl = (url: string): string => {
+  if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/uploads/")) return `${API_BASE}${url}`;
+  return `${API_BASE}/uploads/${url}`;
+};
+
 type AddressSearchResult = {
   display_name: string;
   lat: string;
@@ -178,12 +184,18 @@ const CreateColocPage = () => {
           });
           if (photosResponse.ok) {
             const photos = await photosResponse.json();
-            setExistingPhotos(photos);
+            const mappedPhotos = Array.isArray(photos)
+              ? photos.map((photo: { id: number; url: string; position: number }) => ({
+                  ...photo,
+                  url: toUploadedAssetUrl(photo.url),
+                }))
+              : [];
+            setExistingPhotos(mappedPhotos);
           }
 
           // Charger le logo
           if (data.logo_url) {
-            setExistingLogo(`${API_BASE}/uploads/${data.logo_url}`);
+            setExistingLogo(toUploadedAssetUrl(data.logo_url));
           }
         } catch (err) {
           setError(err instanceof Error ? err.message : "Erreur inconnue");
@@ -287,6 +299,36 @@ const CreateColocPage = () => {
     } catch (err) {
       console.error("Erreur suppression logo:", err);
       setError("Impossible de supprimer le logo");
+    }
+  };
+
+  const handleDeleteFlatshare = async () => {
+    if (!colocId) return;
+
+    const isConfirmed = window.confirm(
+      "Voulez-vous vraiment supprimer cette colocation ? Cette action est irreversible."
+    );
+    if (!isConfirmed) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch(`${API_URL}/flatshares/${colocId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de la suppression de la colocation");
+      }
+
+      navigate("/");
+    } catch (err) {
+      console.error("Erreur suppression colocation:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -799,6 +841,16 @@ const CreateColocPage = () => {
           </div>
 
           <div className="form-actions">
+            {isEditMode && (
+              <button
+                type="button"
+                onClick={handleDeleteFlatshare}
+                className="btn-delete"
+                disabled={isLoading}
+              >
+                Supprimer la colocation
+              </button>
+            )}
             <button
               type="button"
               onClick={() => navigate("/")}

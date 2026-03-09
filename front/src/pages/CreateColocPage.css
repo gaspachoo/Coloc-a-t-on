@@ -239,7 +239,8 @@
 }
 
 .btn-cancel,
-.btn-submit {
+.btn-submit,
+.btn-delete {
   padding: 12px 24px;
   border-radius: 6px;
   font-size: 15px;
@@ -267,8 +268,20 @@
   background: #4a5aef;
 }
 
+.btn-delete {
+  margin-right: auto;
+  background: #fff5f5;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+}
+
+.btn-delete:hover {
+  background: #fed7d7;
+}
+
 .btn-cancel:disabled,
-.btn-submit:disabled {
+.btn-submit:disabled,
+.btn-delete:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
