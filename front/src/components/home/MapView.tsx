@@ -75,7 +75,8 @@ const MapView = ({ colocs, onSelectColoc, selectedColocId }: MapViewProps) => {
     <div className="map-view">
       <MapContainer
         center={INITIAL_CENTER}
-        zoom={14.5}
+        zoom={15}
+        zoomSnap={1}
         scrollWheelZoom={true}
         style={{ height: "100%", width: "100%" }}
       >
