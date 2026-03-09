@@ -14,6 +14,15 @@ const usersRepo = {
     return prisma.user.findUnique({ where: { id } });
   },
 
+  async existsByEmail(email: string) {
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+      select: { id: true },
+    });
+    return Boolean(user);
+  },
+
   async update(id: number, data: any) {
     return prisma.user.update({ where: { id }, data });
   },

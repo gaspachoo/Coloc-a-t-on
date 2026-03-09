@@ -14,6 +14,10 @@ const usersServices = {
     return await usersRepo.getUserById(id);
   },
 
+  async checkRoommateEmailExists(email: string) {
+    return await usersRepo.existsByEmail(email);
+  },
+
   async updateUser(id: number, data: any) {
     return await usersRepo.update(id, data);
   },

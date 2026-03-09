@@ -2,6 +2,11 @@ import { Request, Response } from 'express';
 import usersService from '../services/usersService.js';
 import { AuthenticatedRequest } from '../types/express.js';
 
+const MIN_LOOKUP_RESPONSE_MS = 700;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const usersCtrl = {
   createUser: async (req: Request, res: Response) => {
     try {
@@ -31,6 +36,41 @@ const usersCtrl = {
         } catch(err: any) {
             const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
             return res.status(500).json({ error: 'Fail to get user', details: message });
+        }
+    },
+
+    checkRoommateEmail: async (req: AuthenticatedRequest, res: Response) => {
+        const startAt = Date.now();
+        try {
+            const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+
+            if (!email || !EMAIL_REGEX.test(email)) {
+                return res.status(400).json({ error: 'Email invalide' });
+            }
+
+            if (email === req.user?.email) {
+                return res.status(400).json({ error: 'Vous etes deja membre de votre colocation' });
+            }
+
+            const exists = await usersService.checkRoommateEmailExists(email);
+
+            const elapsed = Date.now() - startAt;
+            if (elapsed < MIN_LOOKUP_RESPONSE_MS) {
+                await sleep(MIN_LOOKUP_RESPONSE_MS - elapsed);
+            }
+
+            if (!exists) {
+                return res.status(404).json({ error: 'Utilisateur introuvable' });
+            }
+
+            return res.status(200).json({ email });
+        } catch(err: any) {
+            const elapsed = Date.now() - startAt;
+            if (elapsed < MIN_LOOKUP_RESPONSE_MS) {
+                await sleep(MIN_LOOKUP_RESPONSE_MS - elapsed);
+            }
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to check roommate email', details: message });
         }
     },
 
