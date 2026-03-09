@@ -1,7 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import type { Coloc } from "../../types/coloc";
-import { useUi } from "../../context/uiContext";
-import { Star, StarOff } from "lucide-react";
 import "./ColocPreviewBar.css";
 
 type Props = {
@@ -10,13 +8,10 @@ type Props = {
 
 const ColocPreviewBar = ({ coloc }: Props) => {
   const navigate = useNavigate();
-  const { toggleFavorite, isFavorite } = useUi();
 
   const coverPhoto = coloc.photos?.[0] ?? null;
-  const fav = isFavorite(coloc.id);
 
   const handleOpen = () => navigate(`/coloc/${coloc.id}`);
-
   return (
     <div
       role="button"
