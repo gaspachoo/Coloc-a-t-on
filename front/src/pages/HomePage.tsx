@@ -18,6 +18,30 @@ const toUploadedAssetUrl = (url: string) => {
   return `${API_BASE}/uploads/${url}`;
 };
 
+const toNumber = (value: string | number | null): number => {
+  if (typeof value === "number") return value;
+  if (typeof value === "string") {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+};
+
+type JsonRecord = Record<string, unknown>;
+
+const asString = (value: unknown): string => (typeof value === "string" ? value : "");
+
+const asNullableString = (value: unknown): string | null =>
+  typeof value === "string" ? value : null;
+
+const asNumberOrStringOrNull = (value: unknown): string | number | null => {
+  if (typeof value === "number" || typeof value === "string") return value;
+  return null;
+};
+
+const asNumberOrNull = (value: unknown): number | null =>
+  typeof value === "number" ? value : null;
+
 const HomePage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -38,23 +62,26 @@ const HomePage = () => {
           throw new Error("Erreur lors du chargement des colocations");
         }
         
-        const data = await response.json();
+        const data = (await response.json()) as unknown;
+        const flatshares = Array.isArray(data) ? (data as JsonRecord[]) : [];
         
         // Mapper les données du backend au format attendu par le frontend
-        const mappedColocs = data.map((flatshare: any) => ({
-          id: flatshare.id.toString(),
-          name: flatshare.title,
-          address: `${flatshare.street}, ${flatshare.postal_code} ${flatshare.city}`,
+        const mappedColocs: Coloc[] = flatshares.map((flatshare) => ({
+          id: String(flatshare.id ?? ""),
+          name: asString(flatshare.title),
+          address: `${asString(flatshare.street)}, ${asString(flatshare.postal_code)} ${asString(flatshare.city)}`,
           buzzerInfo: "",
           roommates: "",
-          logoUrl: flatshare.logo_url ? `${API_BASE}/uploads/${flatshare.logo_url}` : null,
-          lat: flatshare.latitude ? parseFloat(flatshare.latitude) : 0,
-          lng: flatshare.longitude ? parseFloat(flatshare.longitude) : 0,
-          rent: flatshare.rent_per_person ? parseFloat(flatshare.rent_per_person) : 0,
+          logoUrl: asNullableString(flatshare.logo_url)
+            ? toUploadedAssetUrl(asString(flatshare.logo_url))
+            : null,
+          lat: toNumber(asNumberOrStringOrNull(flatshare.latitude)),
+          lng: toNumber(asNumberOrStringOrNull(flatshare.longitude)),
+          rent: toNumber(asNumberOrStringOrNull(flatshare.rent_per_person)),
           area: 0,
-          rooms: flatshare.bedrooms_count || 0,
-          ateuf: flatshare.ambiance === "festive" || flatshare.ambiance === "tres_festive",
-          description: flatshare.description || "",
+          rooms: asNumberOrNull(flatshare.bedrooms_count) ?? 0,
+          ateuf: asString(flatshare.ambiance) === "festive" || asString(flatshare.ambiance) === "tres_festive",
+          description: asString(flatshare.description),
           photos: [],
         }));
 
@@ -71,12 +98,14 @@ const HomePage = () => {
 
               if (!photosResponse.ok) return mappedColoc;
 
-              const photos = await photosResponse.json();
+              const photos = (await photosResponse.json()) as unknown;
+              const firstPhoto = Array.isArray(photos)
+                ? asString((photos[0] as JsonRecord | undefined)?.url)
+                : "";
+
               return {
                 ...mappedColoc,
-                photos: Array.isArray(photos)
-                  ? photos.map((p: any) => toUploadedAssetUrl(p.url))
-                  : [],
+                photos: firstPhoto ? [toUploadedAssetUrl(firstPhoto)] : [],
               };
             } catch {
               return mappedColoc;
