@@ -67,9 +67,22 @@ const ColocDetailPage = () => {
             const isUserMember = members.some((member: any) => member.id === user.id);
             setIsMember(isUserMember);
           }
+
+          const formatMemberName = (member: any) => {
+            const firstName = typeof member.first_name === "string" ? member.first_name.trim() : "";
+            const lastName = typeof member.last_name === "string" ? member.last_name.trim() : "";
+            const fullName = `${firstName} ${lastName}`.trim();
+            if (fullName.length > 0) return fullName;
+
+            if (typeof member.name === "string" && member.name.trim().length > 0) {
+              return member.name.trim();
+            }
+
+            return "Colocataire";
+          };
+
           mappedColoc.roommates = members
-            .map((member: any) => member.email)
-            .filter((email: unknown) => typeof email === "string" && email.length > 0)
+            .map((member: any) => formatMemberName(member))
             .join(", ");
         }
 
