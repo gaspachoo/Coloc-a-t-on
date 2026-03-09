@@ -2,13 +2,22 @@ services:
   frontend:
     build:
       target: development
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+    ports:
+      - 5173:5173
     volumes:
       - ./front/src:/usr/app/src
       - ./front/public:/usr/app/public
       - ./front/index.html:/usr/app/index.html
+      - ./front/vite.config.ts:/usr/app/vite.config.ts
   backend:
     build:
       target: development
+    environment:
+      - FRONTEND_URL=http://localhost:5173
+    ports:
+      - 5000:5000
     volumes:
       - ./back/controllers:/usr/app/controllers
       - ./back/services:/usr/app/services
