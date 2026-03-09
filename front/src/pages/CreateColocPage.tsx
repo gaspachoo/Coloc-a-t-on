@@ -366,7 +366,7 @@ const CreateColocPage = () => {
             <select
               id="ambiance"
               value={ambiance}
-              onChange={(e) => setAmbiance(e.target.value as "calme" | "studieuse" | "equilibree" | "festive" | "tres_festive")}
+              onChange={(e) => setAmbiance(e.target.value as "studieuse" | "festive" )}
               required
             >
               <option value="calme">Calme</option>
