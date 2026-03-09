@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { Coloc } from "../mock/colocs";
+import type { Coloc } from "../types/coloc";
 import { useUi } from "../context/uiContext";
 import { Eye, Bell, Users, Type, Image as ImageIcon, Star, StarOff, Edit } from "lucide-react";
 import { useAuth } from "../context/authContext";

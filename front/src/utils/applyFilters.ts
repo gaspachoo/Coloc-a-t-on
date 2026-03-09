@@ -1,4 +1,4 @@
-import type { Coloc } from "../mock/colocs";
+import type { Coloc } from "../types/coloc";
 import type { Filters } from "../types/filters";
 
 export function applyFilters(colocs: Coloc[], f: Filters): Coloc[] {

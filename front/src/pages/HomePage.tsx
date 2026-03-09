@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TopSearchBar from "../components/home/TopSearchBar";
 import MapView from "../components/home/MapView";
 import ColocPreviewBar from "../components/home/ColocPreviewBar";
-import type { Coloc } from "../mock/colocs";
+import type { Coloc } from "../types/coloc";
 import { useUi } from "../context/uiContext";
 import { useAuth } from "../context/authContext";
 import { applyFilters } from "../utils/applyFilters";

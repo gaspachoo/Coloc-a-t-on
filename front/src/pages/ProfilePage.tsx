@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import type { Coloc } from "../mock/colocs";
+import type { Coloc } from "../types/coloc";
 import { User as UserIcon, Mail, Calendar, Home } from "lucide-react";
 import "./ProfilePage.css";
 

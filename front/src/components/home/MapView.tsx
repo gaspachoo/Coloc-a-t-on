@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import type { Coloc } from "../../mock/colocs";
+import type { Coloc } from "../../types/coloc";
 import "./MapView.css";
 
 type MapViewProps = {
