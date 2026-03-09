@@ -47,3 +47,9 @@
     0 8px 20px rgba(0, 0, 0, 0.22),
     0 0 0 6px rgba(27, 44, 137, 0.22);
 }
+
+@media (max-width: 768px) {
+  .leaflet-control-zoom {
+    display: none;
+  }
+}
