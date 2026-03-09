@@ -1,3 +1,5 @@
+import type { Ambiance } from "./coloc";
+
 export type SearchField = "name" | "address";
 
 export type Filters = {
@@ -7,7 +9,7 @@ export type Filters = {
   areaMax: number | null;
   rooms: number[];     // 1,2,3,4,5
   rooms6Plus: boolean; // 6+
-  ateufOnly: boolean;
+  ambiances: Ambiance[];
 
   searchField: SearchField;
   query: string;
@@ -19,8 +21,8 @@ export const DEFAULT_FILTERS: Filters = {
   areaMin: null,
   areaMax: null,
   rooms: [],
-  rooms6Plus:false,
-  ateufOnly: false,
+  rooms6Plus: false,
+  ambiances: [],
 
   searchField: "name",
   query: "",

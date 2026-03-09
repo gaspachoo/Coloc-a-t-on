@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TopSearchBar from "../components/home/TopSearchBar";
 import MapView from "../components/home/MapView";
 import ColocPreviewBar from "../components/home/ColocPreviewBar";
-import type { Coloc } from "../types/coloc";
+import { AMBIANCE_LABELS, type Ambiance, type Coloc } from "../types/coloc";
 import { useUi } from "../context/uiContext";
 import { useAuth } from "../context/authContext";
 import { applyFilters } from "../utils/applyFilters";
@@ -41,6 +41,12 @@ const asNumberOrStringOrNull = (value: unknown): string | number | null => {
 
 const asNumberOrNull = (value: unknown): number | null =>
   typeof value === "number" ? value : null;
+
+const toAmbiance = (value: unknown): Ambiance => {
+  const raw = asString(value);
+  if (raw in AMBIANCE_LABELS) return raw as Ambiance;
+  return "equilibree";
+};
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -80,7 +86,7 @@ const HomePage = () => {
           area: toNumber(asNumberOrStringOrNull(flatshare.area)),
           rooms: asNumberOrNull(flatshare.bedrooms_count) ?? 0,
           buzzerInfo: asString(flatshare.buzzer_info),
-          ateuf: asString(flatshare.ambiance) === "festive" || asString(flatshare.ambiance) === "tres_festive",
+          ambiance: toAmbiance(flatshare.ambiance),
           description: asString(flatshare.description),
           photos: [],
         }));

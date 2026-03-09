@@ -27,9 +27,8 @@ export function applyFilters(colocs: Coloc[], f: Filters): Coloc[] {
         if (!matchExact && !match6Plus) return false;
     }
 
-
-    // Ateuf
-    if (f.ateufOnly && !c.ateuf) return false;
+  // Ambiance (multi-select)
+  if (f.ambiances.length > 0 && !f.ambiances.includes(c.ambiance)) return false;
 
     return true;
   });

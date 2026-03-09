@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import type { Coloc } from "../../types/coloc";
+import { AMBIANCE_LABELS, type Coloc } from "../../types/coloc";
 import "./ColocPreviewBar.css";
 
 type Props = {
@@ -45,9 +45,7 @@ const ColocPreviewBar = ({ coloc }: Props) => {
         <div className="cp-badge">{coloc.rent} € / mois</div>
         <div className="cp-badge">{coloc.area} m²</div>
         <div className="cp-badge">{coloc.rooms} chambres</div>
-        {coloc.ateuf && (
-          <div className="cp-badge cp-badge-ateuf">Coloc A-t&apos;euf</div>
-        )}
+        <div className="cp-badge">Ambiance: {AMBIANCE_LABELS[coloc.ambiance]}</div>
       </div>
 
       {/* 4) Adresse */}

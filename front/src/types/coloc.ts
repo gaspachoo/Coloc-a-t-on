@@ -1,3 +1,21 @@
+export const AMBIANCE_VALUES = [
+  "calme",
+  "studieuse",
+  "equilibree",
+  "festive",
+  "tres_festive",
+] as const;
+
+export type Ambiance = (typeof AMBIANCE_VALUES)[number];
+
+export const AMBIANCE_LABELS: Record<Ambiance, string> = {
+  calme: "Calme",
+  studieuse: "Studieuse",
+  equilibree: "Equilibree",
+  festive: "Festive",
+  tres_festive: "Tres festive",
+};
+
 export type Coloc = {
   id: string;
   name: string;
@@ -10,7 +28,7 @@ export type Coloc = {
   rent: number;     
   area: number;     
   rooms: number;     
-  ateuf: boolean;
+  ambiance: Ambiance;
   description: string;
   photos: string[];
     

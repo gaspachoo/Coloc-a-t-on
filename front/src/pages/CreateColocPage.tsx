@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { X, Upload } from "lucide-react";
 import { useAuth } from "../context/authContext";
+import { AMBIANCE_LABELS, type Ambiance } from "../types/coloc";
 import "./CreateColocPage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -50,7 +51,7 @@ const CreateColocPage = () => {
   const [area, setArea] = useState("");
   const [bedroomsCount, setBedroomsCount] = useState("");
   const [buzzerInfo, setBuzzerInfo] = useState("");
-  const [ambiance, setAmbiance] = useState<"studieuse" | "festive">("festive");
+  const [ambiance, setAmbiance] = useState<Ambiance>("equilibree");
 
   // Address fields
   const [street, setStreet] = useState("");
@@ -126,7 +127,9 @@ const CreateColocPage = () => {
           setArea(data.area?.toString() || "");
           setBedroomsCount(data.bedrooms_count?.toString() || "");
           setBuzzerInfo(data.buzzer_info || "");
-          setAmbiance(data.ambiance || "festive");
+          setAmbiance((typeof data.ambiance === "string" && data.ambiance in AMBIANCE_LABELS
+            ? data.ambiance
+            : "equilibree") as Ambiance);
           setStreet(data.street || "");
           setPostalCode(data.postal_code || "");
           setCity(data.city || "");
@@ -599,11 +602,14 @@ const CreateColocPage = () => {
             <select
               id="ambiance"
               value={ambiance}
-              onChange={(e) => setAmbiance(e.target.value as "studieuse" | "festive" )}
+              onChange={(e) => setAmbiance(e.target.value as Ambiance)}
               required
             >
-              <option value="studieuse">Studieuse</option>
-              <option value="festive">Festive</option>
+              <option value="calme">{AMBIANCE_LABELS.calme}</option>
+              <option value="studieuse">{AMBIANCE_LABELS.studieuse}</option>
+              <option value="equilibree">{AMBIANCE_LABELS.equilibree}</option>
+              <option value="festive">{AMBIANCE_LABELS.festive}</option>
+              <option value="tres_festive">{AMBIANCE_LABELS.tres_festive}</option>
             </select>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import type { Coloc } from "../types/coloc";
+import { AMBIANCE_LABELS, type Ambiance, type Coloc } from "../types/coloc";
 import { useUi } from "../context/uiContext";
 import { Eye, Bell, Users, Type, Image as ImageIcon, Edit } from "lucide-react";
 import { useAuth } from "../context/authContext";
@@ -8,6 +8,11 @@ import "./ColocDetailPage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE = API_URL.replace(/\/api$/, "");
+
+const toAmbiance = (value: unknown): Ambiance => {
+  if (typeof value === "string" && value in AMBIANCE_LABELS) return value as Ambiance;
+  return "equilibree";
+};
 
 const ColocDetailPage = () => {
   const { colocId } = useParams();
@@ -53,7 +58,7 @@ const ColocDetailPage = () => {
           rent: data.rent_per_person ? parseFloat(data.rent_per_person) : 0,
           area: data.area || 0,
           rooms: data.bedrooms_count || 0,
-          ateuf: data.ambiance === "festive" || data.ambiance === "tres_festive",
+          ambiance: toAmbiance(data.ambiance),
           description: data.description || "",
           photos: [], // Sera rempli juste après
         };
@@ -210,9 +215,7 @@ const ColocDetailPage = () => {
               <span className="coloc-badge">{coloc.rooms} chambres</span>
               <span className="coloc-badge">{coloc.area} m²</span>
               <span className="coloc-badge">{coloc.rent} €/mois</span>
-              {coloc.ateuf && (
-                <span className="coloc-badge coloc-badge-ateuf">A-t’euf</span>
-              )}
+              <span className="coloc-badge">{AMBIANCE_LABELS[coloc.ambiance]}</span>
             </div>
           </div>
         </div>
