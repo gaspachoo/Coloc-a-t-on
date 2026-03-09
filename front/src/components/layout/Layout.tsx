@@ -50,7 +50,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <SidePanel
         panelMode={panelMode}
         isOpen={isPanelOpen}
-        onClosePanel={() => setIsPanelOpen(false)}
       />
 
       <main className="app-content">{children}</main>
