@@ -175,12 +175,13 @@ console.log("filteredColocs:", filteredColocs.length);
     return <div className="home-main">Chargement...</div>;
   }
 
-  if (error) {
-    return <div className="home-main">Erreur: {error}</div>;
-  }
-
   return (
     <div className="home-main">
+      {error && (
+        <div className="error-banner">
+          Erreur: {error}
+        </div>
+      )}
       <MapView
         colocs={filteredColocs}                
         onSelectColoc={setSelectedColocId}

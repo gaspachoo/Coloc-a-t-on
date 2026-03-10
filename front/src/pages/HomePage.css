@@ -35,7 +35,39 @@
   transform: scale(0.95);
 }
 
+.error-banner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2500;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.error-banner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2500;
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 8px 16px;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
+  .error-banner {
+    bottom: unset;
+    top: 68px;
+    left: 12px;
+    right: 12px;
+    border-radius: 8px;
+  }
+
   .floating-add-btn {
     width: 50px;
     height: 50px;
