@@ -6,7 +6,7 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
 
 ### Prérequis
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et démarré
+- Docker installé et démarré
 - Git
 
 ### Installation
@@ -36,7 +36,7 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
    DB_PORT=5432
    DB_NAME=colocaton
 
-   #Application Configuration
+   # Application Configuration
    NODE_ENV=development
    API_BACKEND_URL=http://localhost:5000/api
    FRONTEND_URL=http://localhost:5173
@@ -54,21 +54,31 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
    docker compose -f docker-compose.yml -f docker-compose.dev.yml build
    ```
 
-   A exécuter la première fois pour build l'image
+   À exécuter dès modification du backend (pas de hot-reload).
 
    ```bash
    docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
    ```
 
-   A exécuter pour mettre en route le docker
+   À exécuter pour mettre en route le docker.
 
    **En mode production** :
-   A venir
 
-4. **Accéder à l'application**
+   Il est recommandé de faire un pull préalable :
+   ```bash
+   docker compose pull
+   ```
+
+   Puis
+   ```bash
+   docker compose up -d
+   ```
+   Attention, concernant le docker-compose de prod, il est conseillé d'utiliser celui disponible sur la branche [prod](https://github.com/gaspachoo/Coloc-a-t-on/tree/prod/)
+
+5. **Accéder à l'application**
    - Frontend : <http://localhost:5173>
    - Backend API : <http://localhost:5000>
-   - PostgreSQL : localhost:5432
+   - PostgreSQL : <http://localhost:5432> (en dev uniquement)
 
 ### Commandes utiles
 
@@ -77,15 +87,6 @@ Application de recherche et gestion de colocations pour les étudiants de Centra
 docker logs -f colocaton-backend   # Backend
 docker logs -f colocaton-frontend  # Frontend
 docker logs -f colocaton-postgres  # Base de données
-
-# Arrêter l'application
-docker compose -f docker-compose.yml -f docker-compose.dev.yml down
-
-# Reconstruire les images
-docker compose -f docker-compose.yml -f docker-compose.dev.yml build
-
-# Démarrer les services
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 # Réinitialiser complètement (⚠️ supprime les données)
 docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
@@ -97,19 +98,27 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 Colocaton/
 ├── front/              # Application React + Vite
 │   ├── src/
-│   │   ├── components/ # Composants React
-│   │   ├── pages/      # Pages de l'application
-│   │   └── context/    # Context API (Auth, UI)
+│   │   ├── components/
+│   │   │   ├── auth/       # Modale de connexion/inscription
+│   │   │   ├── home/       # Composants de la page d'accueil (carte, filtres, aperçu)
+│   │   │   └── layout/     # Navbar, footer, rail gauche, panneau latéral
+│   │   ├── pages/          # Pages de l'application
+│   │   ├── context/        # Context API (Auth, UI)
+│   │   ├── types/          # Types TypeScript partagés
+│   │   └── utils/          # Utilitaires (filtres, etc.)
 │   └── Dockerfile
 ├── back/               # API Node.js + Express + Prisma
 │   ├── controllers/    # Contrôleurs Express
 │   ├── services/       # Logique métier
 │   ├── repositories/   # Accès aux données
 │   ├── routes/         # Routes API
+│   ├── utils/          # Middlewares et utilitaires (auth, upload, image)
 │   ├── prisma/         # Schéma et migrations Prisma
+│   ├── generated/      # Client Prisma généré
+│   ├── uploads/        # Fichiers uploadés (photos, logos)
 │   └── Dockerfile
-├── docker-compose.yml      # Configuration production
-├── docker-compose.dev.yml  # Configuration développement
+├── docker-compose.yml      # Configuration de base
+├── docker-compose.dev.yml  # Surcharge développement (hot-reload)
 └── .env                    # Variables d'environnement (à créer)
 ```
 
@@ -119,13 +128,13 @@ Colocaton/
 
 Le backend utilise :
 
-- **Node.js** avec Express
+- **Node.js** avec **Express 5**
 - **TypeScript** avec hot-reload via `tsx`
-- **Prisma** comme ORM (PostgreSQL)
+- **Prisma 7** comme ORM (PostgreSQL via adaptateur `pg`)
 - **bcryptjs** pour le hachage des mots de passe
 - **Multer** pour l'upload de fichiers
-
-Les changements de code sont automatiquement détectés grâce au volume Docker et `tsx`.
+- **Sharp** pour le traitement et redimensionnement des images
+- **cookie-parser** pour la gestion des cookies (authentification par token httpOnly)
 
 ### Frontend
 
@@ -133,11 +142,32 @@ Le frontend utilise :
 
 - **React 19** avec TypeScript
 - **Vite** comme bundler
-- **React Router** pour la navigation
-- **Leaflet** pour les cartes
+- **React Router v7** pour la navigation
+- **Leaflet / React-Leaflet** pour les cartes interactives
 - **Lucide React** pour les icônes
 
+Pages disponibles :
+
+- `/` — Page d'accueil avec carte, filtres et liste des colocations
+- `/coloc/:colocId` — Détail d'une colocation
+- `/coloc/:colocId/edit` — Modification d'une colocation
+- `/create-coloc` — Création d'une colocation
+- `/profile` — Profil utilisateur
+
 Le hot-reload est activé automatiquement via Vite.
+
+### Modèle de données
+
+Les principales entités de la base de données :
+
+- **User** — Compte utilisateur (nom, prénom, promo, photo de profil, rôle)
+- **Flatshare** — Colocation (titre, description, loyer, adresse, géolocalisation, ambiance, statut, logo)
+- **FlatshareMember** — Membres d'une colocation (statut : pending, active, scheduled_departure, former)
+- **FlatsharePhoto** — Photos associées à une colocation (avec position)
+- **FlatshareApplication** — Candidatures (statut : pending, accepted, rejected, cancelled)
+- **Favorite** — Colocations favorites d'un utilisateur
+- **Equipment / FlatshareEquipment** — Équipements disponibles dans une colocation
+- **AuthToken** — Tokens d'authentification (httpOnly cookie)
 
 ### Migrations de base de données
 
@@ -153,26 +183,47 @@ docker exec colocaton-backend npx prisma migrate dev --name nom_de_la_migration
 
 ### Authentication
 
-- `POST /api/auth/signup` - Inscription
-- `POST /api/auth/login` - Connexion
-- `POST /api/auth/logout` - Déconnexion
-- `GET /api/auth/me` - Profil utilisateur
+- `POST /api/auth/signup` — Inscription
+- `POST /api/auth/login` — Connexion
+- `POST /api/auth/logout` — Déconnexion (auth requise)
+- `GET /api/auth/me` — Profil de l'utilisateur connecté (auth requise)
+
+### Users (Utilisateurs)
+
+- `GET /api/users` — Liste des utilisateurs
+- `GET /api/users/:id` — Détails d'un utilisateur
+- `PATCH /api/users/:id` — Modifier son profil (auth requise, propriétaire)
+- `DELETE /api/users/:id` — Supprimer son compte (auth requise, propriétaire)
+- `POST /api/users/:id/profile-photo` — Uploader une photo de profil (auth requise, propriétaire)
+- `DELETE /api/users/:id/profile-photo` — Supprimer la photo de profil (auth requise, propriétaire)
+- `POST /api/users/check-roommate-email` — Vérifier l'email d'un colocataire (auth requise)
 
 ### Flatshares (Colocations)
 
-- `GET /api/flatshares` - Liste des colocations
-- `POST /api/flatshares` - Créer une colocation
-- `GET /api/flatshares/:id` - Détails d'une colocation
-- `PUT /api/flatshares/:id` - Modifier une colocation
-- `DELETE /api/flatshares/:id` - Supprimer une colocation
-- `POST /api/flatshares/:id/photos` - Ajouter des photos
+- `GET /api/flatshares` — Liste des colocations
+- `POST /api/flatshares` — Créer une colocation (auth requise)
+- `GET /api/flatshares/:id` — Détails d'une colocation
+- `PATCH /api/flatshares/:id` — Modifier une colocation (auth requise, membre)
+- `DELETE /api/flatshares/:id` — Supprimer une colocation (auth requise, membre)
+- `GET /api/flatshares/:id/members` — Membres de la colocation
+- `GET /api/flatshares/:id/photos` — Photos de la colocation
+- `GET /api/flatshares/user/flatshares` — Colocations de l'utilisateur connecté (auth requise)
 
-### Applications
+### Photos & Logo
 
-- `GET /api/flatshares/:id/applications` - Liste des candidatures
-- `POST /api/flatshares/:id/applications` - Candidater
-- `POST /api/flatshares/:id/applications/:applicationId/accept` - Accepter
-- `POST /api/flatshares/:id/applications/:applicationId/reject` - Refuser
+- `POST /api/flatshares/:id/photos` — Ajouter une photo (auth requise, membre)
+- `DELETE /api/flatshares/:id/photos/:photoId` — Supprimer une photo (auth requise, membre)
+- `PATCH /api/flatshares/:id/photos/:photoId/position` — Modifier la position d'une photo (auth requise, membre)
+- `POST /api/flatshares/:id/logo` — Uploader un logo (auth requise, membre)
+- `DELETE /api/flatshares/:id/logo` — Supprimer le logo (auth requise, membre)
+
+### Applications (Candidatures)
+
+- `GET /api/flatshares/:id/applications` — Liste des candidatures (auth requise)
+- `POST /api/flatshares/:id/applications` — Candidater à une colocation (auth requise)
+- `PATCH /api/flatshares/:id/applications/:applicationId/accept` — Accepter une candidature (auth requise)
+- `PATCH /api/flatshares/:id/applications/:applicationId/reject` — Refuser une candidature (auth requise)
+- `GET /api/flatshares/user/applications` — Candidatures de l'utilisateur connecté (auth requise)
 
 ## 👥 Contributeurs
 
