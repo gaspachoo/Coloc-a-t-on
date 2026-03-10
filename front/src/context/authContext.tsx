@@ -21,6 +21,7 @@ type AuthContextValue = {
   signup: (email: string, password: string, first_name: string, last_name: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (id: number, data: Record<string, string>) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -128,6 +129,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const updateUser = async (id: number, data: Record<string, string>) => {
+    const response = await fetch(`${API_URL}/users/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const json = await response.json();
+      throw new Error(json.error || json.details || "Erreur lors de la mise à jour");
+    }
+
+    const updatedUser = await response.json();
+    setUser(updatedUser);
+  };
+
   const value = useMemo(
     () => ({
       user,
@@ -139,6 +157,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       signup,
       login,
       logout,
+      updateUser,
     }),
     [user, isLoading, error, isLoginModalOpen]
   );

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { AMBIANCE_LABELS, type Ambiance, type Coloc } from "../types/coloc";
-import { User as UserIcon, Mail, Calendar, Home } from "lucide-react";
+import { User as UserIcon, Mail, Calendar, Home, Pencil, Lock, ChevronDown, ChevronUp } from "lucide-react";
 import "./ProfilePage.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -14,10 +14,35 @@ const toAmbiance = (value: unknown): Ambiance => {
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [userColocs, setUserColocs] = useState<Coloc[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Edit sections open state
+  const [openSection, setOpenSection] = useState<"identity" | "email" | "password" | null>(null);
+
+  // Identity form
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [identityLoading, setIdentityLoading] = useState(false);
+  const [identityError, setIdentityError] = useState<string | null>(null);
+  const [identitySuccess, setIdentitySuccess] = useState(false);
+
+  // Email form
+  const [newEmail, setNewEmail] = useState("");
+  const [emailPassword, setEmailPassword] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailSuccess, setEmailSuccess] = useState(false);
+
+  // Password form
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -72,6 +97,94 @@ const ProfilePage = () => {
 
     fetchUserColocs();
   }, [user, navigate]);
+
+  const toggleSection = (section: "identity" | "email" | "password") => {
+    if (openSection === section) {
+      setOpenSection(null);
+    } else {
+      setOpenSection(section);
+      setIdentityError(null);
+      setIdentitySuccess(false);
+      setEmailError(null);
+      setEmailSuccess(false);
+      setPasswordError(null);
+      setPasswordSuccess(false);
+      if (section === "identity" && user) {
+        setFirstName(user.first_name);
+        setLastName(user.last_name);
+      }
+      if (section === "email") {
+        setNewEmail("");
+        setEmailPassword("");
+      }
+      if (section === "password") {
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    }
+  };
+
+  const handleIdentitySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setIdentityLoading(true);
+    setIdentityError(null);
+    setIdentitySuccess(false);
+    try {
+      await updateUser(user.id, { first_name: firstName.trim(), last_name: lastName.trim() });
+      setIdentitySuccess(true);
+    } catch (err) {
+      setIdentityError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setIdentityLoading(false);
+    }
+  };
+
+  const handleEmailSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    setEmailLoading(true);
+    setEmailError(null);
+    setEmailSuccess(false);
+    try {
+      await updateUser(user.id, { email: newEmail.trim().toLowerCase(), current_password: emailPassword });
+      setEmailSuccess(true);
+      setNewEmail("");
+      setEmailPassword("");
+    } catch (err) {
+      setEmailError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Les nouveaux mots de passe ne correspondent pas");
+      return;
+    }
+    if (newPassword.length < 8) {
+      setPasswordError("Le nouveau mot de passe doit contenir au moins 8 caractères");
+      return;
+    }
+    setPasswordLoading(true);
+    setPasswordError(null);
+    setPasswordSuccess(false);
+    try {
+      await updateUser(user.id, { current_password: currentPassword, new_password: newPassword });
+      setPasswordSuccess(true);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      setPasswordError(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
 
   if (!user) {
     return null;
@@ -129,6 +242,141 @@ const ProfilePage = () => {
                 <span>Inscrit le {formatDate(user.created_at)}</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Edit profile sections */}
+        <div className="profile-section edit-section">
+          <h2><Pencil size={20} /> Modifier mon profil</h2>
+
+          {/* Identity */}
+          <div className="edit-accordion">
+            <button className="edit-accordion-header" onClick={() => toggleSection("identity")}>
+              <span><UserIcon size={16} /> Nom &amp; Prénom</span>
+              {openSection === "identity" ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+            {openSection === "identity" && (
+              <form className="edit-form" onSubmit={handleIdentitySubmit}>
+                <div className="edit-form-row">
+                  <div className="edit-form-group">
+                    <label htmlFor="firstName">Prénom</label>
+                    <input
+                      id="firstName"
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="edit-form-group">
+                    <label htmlFor="lastName">Nom</label>
+                    <input
+                      id="lastName"
+                      type="text"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      required
+                    />
+                  </div>
+                </div>
+                {identityError && <p className="edit-form-error">{identityError}</p>}
+                {identitySuccess && <p className="edit-form-success">Profil mis à jour !</p>}
+                <button type="submit" className="btn-save" disabled={identityLoading}>
+                  {identityLoading ? "Enregistrement..." : "Enregistrer"}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="edit-accordion">
+            <button className="edit-accordion-header" onClick={() => toggleSection("email")}>
+              <span><Mail size={16} /> Adresse e-mail</span>
+              {openSection === "email" ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+            {openSection === "email" && (
+              <form className="edit-form" onSubmit={handleEmailSubmit}>
+                <div className="edit-form-group">
+                  <label htmlFor="newEmail">Nouvel e-mail</label>
+                  <input
+                    id="newEmail"
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="edit-form-group">
+                  <label htmlFor="emailPassword">Mot de passe actuel</label>
+                  <input
+                    id="emailPassword"
+                    type="password"
+                    value={emailPassword}
+                    onChange={(e) => setEmailPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+                {emailError && <p className="edit-form-error">{emailError}</p>}
+                {emailSuccess && <p className="edit-form-success">E-mail mis à jour !</p>}
+                <button type="submit" className="btn-save" disabled={emailLoading}>
+                  {emailLoading ? "Enregistrement..." : "Enregistrer"}
+                </button>
+              </form>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="edit-accordion">
+            <button className="edit-accordion-header" onClick={() => toggleSection("password")}>
+              <span><Lock size={16} /> Mot de passe</span>
+              {openSection === "password" ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+            </button>
+            {openSection === "password" && (
+              <form className="edit-form" onSubmit={handlePasswordSubmit}>
+                <div className="edit-form-group">
+                  <label htmlFor="currentPassword">Mot de passe actuel</label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+                <div className="edit-form-group">
+                  <label htmlFor="newPassword">Nouveau mot de passe</label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                    minLength={8}
+                  />
+                </div>
+                <div className="edit-form-group">
+                  <label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                    minLength={8}
+                  />
+                </div>
+                {passwordError && <p className="edit-form-error">{passwordError}</p>}
+                {passwordSuccess && <p className="edit-form-success">Mot de passe mis à jour !</p>}
+                <button type="submit" className="btn-save" disabled={passwordLoading}>
+                  {passwordLoading ? "Enregistrement..." : "Enregistrer"}
+                </button>
+              </form>
+            )}
           </div>
         </div>
 
