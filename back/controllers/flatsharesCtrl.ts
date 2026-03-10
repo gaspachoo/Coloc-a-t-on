@@ -234,6 +234,22 @@ const flatsharesCtrl = {
         }
     },
 
+    getUserFlatshares: async (req: AuthenticatedRequest, res: Response) => {
+        try {
+            const userId = req.user?.id;
+
+            if (!userId) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const flatshares = await flatsharesService.getFlatsharesByUser(userId);
+            return res.status(200).json(flatshares);
+        } catch (err: any) {
+            const message = err?.meta?.driverAdapterError?.cause?.originalMessage || err.message || 'Unknown error';
+            return res.status(500).json({ error: 'Fail to get user flatshares', details: message });
+        }
+    },
+
     uploadLogo: async (req: Request, res: Response) => {
         try {
             const flatshareId = Number(req.params.id);

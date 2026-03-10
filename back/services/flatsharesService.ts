@@ -30,6 +30,10 @@ const flatsharesServices = {
     return await flatsharesRepo.checkMembership(flatshareId, userId);
   },
 
+  async getFlatsharesByUser(userId: number) {
+    return await flatsharesRepo.getFlatsharesByUserId(userId);
+  },
+
   async getMembers(flatshareId: number) {
     return await flatsharesRepo.getMembers(flatshareId);
   },
