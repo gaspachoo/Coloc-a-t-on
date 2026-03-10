@@ -12,7 +12,7 @@
 }
 
 @media (max-width: 768px) {
-  .app-shell {
-    flex-direction: column-reverse;
+  .app-content {
+    padding-bottom: 60px;
   }
 }

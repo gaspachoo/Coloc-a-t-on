@@ -1,5 +1,6 @@
 import usersRepo from '../repositories/usersRepo.js';
 import imageProcessor from '../utils/imageProcessor.js';
+import { hashPassword, verifyPassword } from '../utils/password.js';
 
 const usersServices = {
   async createUser(data: any) {
@@ -19,7 +20,33 @@ const usersServices = {
   },
 
   async updateUser(id: number, data: any) {
-    return await usersRepo.update(id, data);
+    const { current_password, new_password, ...updateData } = data;
+
+    const isChangingEmail = 'email' in updateData;
+    const isChangingPassword = Boolean(new_password);
+
+    if (isChangingEmail || isChangingPassword) {
+      if (!current_password) {
+        throw new Error('Mot de passe actuel requis');
+      }
+      const user = await usersRepo.getUserWithPassword(id);
+      if (!user) throw new Error('Utilisateur introuvable');
+      const ok = await verifyPassword(current_password, (user as any).password_hash);
+      if (!ok) throw new Error('Mot de passe actuel incorrect');
+    }
+
+    if (isChangingPassword) {
+      updateData.password_hash = await hashPassword(new_password);
+    }
+
+    // Only allow safe fields to be updated (no role escalation)
+    const allowedFields = ['first_name', 'last_name', 'email', 'class_year', 'password_hash'];
+    const safeData: Record<string, any> = {};
+    for (const key of allowedFields) {
+      if (key in updateData) safeData[key] = updateData[key];
+    }
+
+    return await usersRepo.updateProfile(id, safeData);
   },
 
   async deleteUser(id: number) {
