@@ -8,8 +8,9 @@ const router = express.Router();
 // Public routes
 router.get('/', flatsharesCtrl.getFlatshares);
 
-// User applications route (before /:id to avoid conflict)
+// User-scoped routes (before /:id to avoid conflict)
 router.get('/user/applications', requireAuth, flatsharesCtrl.getUserApplications);
+router.get('/user/flatshares', requireAuth, flatsharesCtrl.getUserFlatshares);
 
 router.get('/:id', flatsharesCtrl.getFlatshareById);
 router.get('/:id/members', flatsharesCtrl.getMembers);

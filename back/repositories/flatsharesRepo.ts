@@ -334,6 +334,20 @@ const flatsharesRepo = {
       where: { id: flatshareId },
       data: { logo_url: logoUrl }
     });
+  },
+
+  async getFlatsharesByUserId(userId: number) {
+    return prisma.flatshare.findMany({
+      where: {
+        flatshareMembers: {
+          some: {
+            user_id: userId,
+            status: 'active'
+          }
+        }
+      },
+      orderBy: { created_at: 'desc' }
+    });
   }
 };
 

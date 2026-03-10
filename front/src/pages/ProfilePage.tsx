@@ -54,8 +54,8 @@ const ProfilePage = () => {
       try {
         setIsLoading(true);
 
-        // Récupérer toutes les colocs
-        const response = await fetch(`${API_URL}/flatshares`, {
+        // Récupérer les colocs dont l'utilisateur est membre
+        const response = await fetch(`${API_URL}/flatshares/user/flatshares`, {
           credentials: "include",
         });
 
@@ -65,9 +65,7 @@ const ProfilePage = () => {
 
         const allColocs = await response.json();
 
-        // Filtrer les colocs créées par l'utilisateur connecté
         const myColocs = allColocs
-          .filter((flatshare: any) => flatshare.created_by_user_id === user.id)
           .map((flatshare: any) => ({
             id: flatshare.id.toString(),
             name: flatshare.title,

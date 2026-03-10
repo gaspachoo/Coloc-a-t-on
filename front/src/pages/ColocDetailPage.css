@@ -336,12 +336,13 @@
 @media (max-width: 780px) {
   .coloc-page {
     padding: 12px;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
     overflow: auto;
   }
 
   .coloc-page-card {
     height: auto;
-    min-height: calc(100vh - 24px);
+    min-height: calc(100vh - 84px);
     overflow: visible;
     padding: 14px;
   }
