@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import LeftRail from "./LeftRail";
 import SidePanel, { type PanelMode } from "./SidePanel";
 import { useUi } from "../../context/uiContext";
@@ -8,10 +8,20 @@ import "./Layout.css";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [panelMode, setPanelMode] = useState<PanelMode>(null);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const { triggerResetUI } = useUi();
   const { user, logout, openLoginModal } = useAuth();
+
+  const isHomePage = location.pathname === "/";
+
+  useEffect(() => {
+    if (!isHomePage) {
+      setIsPanelOpen(false);
+      setPanelMode(null);
+    }
+  }, [isHomePage]);
 
   const togglePanel = (mode: Exclude<PanelMode, null>) => {
     if (panelMode === mode) {
@@ -40,6 +50,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <div className="app-shell">
       <LeftRail
         panelMode={panelMode}
+        showFilters={isHomePage}
         onHomeClick={handleHomeClick}
         onToggleFilters={() => togglePanel("filters")}
         onProfile={handleProfile}

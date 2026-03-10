@@ -12,6 +12,7 @@ export type PanelMode = "filters" | null;
 
 type LeftRailProps = {
   panelMode: PanelMode;
+  showFilters: boolean;
   onHomeClick: () => void;
   onToggleFilters: () => void;
   onProfile: () => void;
@@ -21,6 +22,7 @@ type LeftRailProps = {
 
 const LeftRail = ({
   panelMode,
+  showFilters,
   onHomeClick,
   onToggleFilters,
   onProfile,
@@ -49,14 +51,16 @@ const LeftRail = ({
           <img src={colocSiteLogo} alt="Accueil" />
         </button>
 
-        <button
-          type="button"
-          className={`left-rail-btn ${panelMode === "filters" ? "is-active" : ""}`}
-          onClick={onToggleFilters}
-          title="Filtres"
-        >
-          <Filter />
-        </button>
+        {showFilters && (
+          <button
+            type="button"
+            className={`left-rail-btn ${panelMode === "filters" ? "is-active" : ""}`}
+            onClick={onToggleFilters}
+            title="Filtres"
+          >
+            <Filter />
+          </button>
+        )}
       </div>
 
       <div className="left-rail-bottom">
