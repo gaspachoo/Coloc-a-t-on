@@ -428,3 +428,28 @@
   color: white;
   transform: scale(1.1);
 }
+
+@media (max-width: 600px) {
+  .create-coloc-page {
+    padding: 20px 12px;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .create-coloc-container {
+    padding: 20px;
+  }
+
+  /* Loyer / surface / chambres : une par ligne */
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  /* Colocataires : bouton sous le champ */
+  .roommates-input-wrapper {
+    flex-direction: column;
+  }
+
+  .roommates-input-wrapper .search-btn {
+    width: 100%;
+  }
+}
