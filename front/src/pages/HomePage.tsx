@@ -94,24 +94,43 @@ const HomePage = () => {
         const colocsWithPhotos = await Promise.all(
           mappedColocs.map(async (mappedColoc) => {
             try {
-              const photosResponse = await fetch(
-                `${API_URL}/flatshares/${mappedColoc.id}/photos?t=${Date.now()}`,
-                {
+              const [photosResponse, membersResponse] = await Promise.all([
+                fetch(`${API_URL}/flatshares/${mappedColoc.id}/photos?t=${Date.now()}`, {
                   credentials: "include",
                   cache: "no-store",
-                },
-              );
+                }),
+                fetch(`${API_URL}/flatshares/${mappedColoc.id}/members`, {
+                  credentials: "include",
+                }),
+              ]);
 
-              if (!photosResponse.ok) return mappedColoc;
+              let firstPhoto = "";
+              if (photosResponse.ok) {
+                const photos = (await photosResponse.json()) as unknown;
+                firstPhoto = Array.isArray(photos)
+                  ? asString((photos[0] as JsonRecord | undefined)?.url)
+                  : "";
+              }
 
-              const photos = (await photosResponse.json()) as unknown;
-              const firstPhoto = Array.isArray(photos)
-                ? asString((photos[0] as JsonRecord | undefined)?.url)
-                : "";
+              let roommates = "";
+              if (membersResponse.ok) {
+                const members = (await membersResponse.json()) as unknown;
+                if (Array.isArray(members)) {
+                  roommates = (members as JsonRecord[])
+                    .map((m) => {
+                      const firstName = asString(m.first_name).trim();
+                      const lastName = asString(m.last_name).trim();
+                      const fullName = `${firstName} ${lastName}`.trim();
+                      return fullName || asString(m.name).trim() || "Colocataire";
+                    })
+                    .join(", ");
+                }
+              }
 
               return {
                 ...mappedColoc,
                 photos: firstPhoto ? [toUploadedAssetUrl(firstPhoto)] : [],
+                roommates,
               };
             } catch {
               return mappedColoc;
