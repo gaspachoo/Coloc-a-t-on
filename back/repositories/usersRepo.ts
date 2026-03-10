@@ -27,6 +27,27 @@ const usersRepo = {
     return prisma.user.update({ where: { id }, data });
   },
 
+  async updateProfile(id: number, data: any) {
+    return prisma.user.update({
+      where: { id },
+      data,
+      select: {
+        id: true,
+        email: true,
+        first_name: true,
+        last_name: true,
+        class_year: true,
+        profile_photo_url: true,
+        role: true,
+        created_at: true,
+      },
+    });
+  },
+
+  async getUserWithPassword(id: number) {
+    return prisma.user.findUnique({ where: { id } });
+  },
+
   async delete(id: number) {
     return prisma.user.delete({ where: { id } });
   },
