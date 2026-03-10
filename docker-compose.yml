@@ -1,13 +1,11 @@
 services:
     frontend:
+        image: ghcr.io/gaspachoo/colocaton-front:latest
         container_name: colocaton-frontend
-        build:
-            context: ./front
-            dockerfile: Dockerfile
-            args:
-            - API_BACKEND_URL=${API_BACKEND_URL}
         environment:
-        - VITE_API_URL=${API_BACKEND_URL}
+          - VITE_API_URL=${API_BACKEND_URL}
+        labels:
+          - "com.centurylinklabs.watchtower.enable=true"
         ports:
             - ${CLIENT_PORT}:5173
         networks:
@@ -17,10 +15,8 @@ services:
         restart: unless-stopped
 
     backend:
+        image: ghcr.io/gaspachoo/colocaton-back:latest
         container_name: colocaton-backend
-        build:
-            context: ./back
-            dockerfile: Dockerfile
         environment:
         - NODE_ENV=${NODE_ENV}
         - FRONTEND_URL=${FRONTEND_URL}
@@ -29,6 +25,8 @@ services:
         - DB_HOST=${DB_HOST}
         - DB_PORT=${DB_PORT}
         - DB_NAME=${DB_NAME}
+        labels:
+            - "com.centurylinklabs.watchtower.enable=true"
         ports:
             - ${SERVER_PORT}:5000
         networks:
@@ -39,7 +37,6 @@ services:
             db:
                 condition: service_healthy
         restart: unless-stopped
-
 
     db:
         image: postgres:latest
@@ -58,6 +55,24 @@ services:
         networks:
         - colocaton-network
         restart: unless-stopped
+
+    watchtower:
+      image: containrrr/watchtower:latest
+      container_name: watchtower
+      restart: unless-stopped
+      # Intervalle = 300 s (5 min) ; --cleanup supprime l’ancienne image après maj
+      # --label-enable : ne touche qu’aux conteneurs marqués ci-dessus
+      command: >
+        --interval 3600
+        --cleanup
+        --label-enable
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /home/admin/.docker/config.json:/config.json:ro
+      environment:
+        - TZ=Europe/Paris
+        - REGISTRY_AUTH_FILE=/config.json
+
 
 networks:
     colocaton-network:
